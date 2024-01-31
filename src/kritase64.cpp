@@ -112,7 +112,7 @@ std::string kritase64::encode(std::vector<uint8_t> bytes)
 		result += alphabetConverter.valueToAlphabet(charValue);
 
 		charValue = 0; // hextet 2
-		charValue = ((bytes[startIndex] & (2 | 1)) << 4) | (bytes[startIndex + 1] & ((128 | 64 | 32 | 16) >> 4));
+		charValue = ((bytes[startIndex] & (2 | 1)) << 4) | ((bytes[startIndex + 1] & (128 | 64 | 32 | 16)) >> 4);
 		std::cout << charValue <<  " " << std::flush;
 		result += alphabetConverter.valueToAlphabet(charValue);
 
@@ -146,7 +146,7 @@ std::string kritase64::encode(std::vector<uint8_t> bytes)
 		if (remainder >= 1)
 		{
 			charValue = 0; // hextet 2
-			charValue = ((bytes[startIndex] & (2 | 1)) << 4) | (bytes[startIndex + 1] & ((128 | 64 | 32 | 16) >> 4));
+			charValue = ((bytes[startIndex] & (2 | 1)) << 4) | ((bytes[startIndex + 1] & (128 | 64 | 32 | 16)) >> 4);
 			std::cout << charValue <<  " " << std::flush;
 			result += alphabetConverter.valueToAlphabet(charValue);
 		}

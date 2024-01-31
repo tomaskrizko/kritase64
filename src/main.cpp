@@ -4,7 +4,7 @@
 
 int main(int argc, char* argv[])
 {
-	std::string str = "fo";
+	std::string str = "foo";
 	std::cout << str << std::endl;
 	std::vector<uint8_t> bytes;
 	bytes.resize(str.length());
