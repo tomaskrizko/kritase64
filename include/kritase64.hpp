@@ -11,9 +11,21 @@
 #include <vector>
 #include <string>
 #include <stdint.h>
+#include <exception>
+#include <stdexcept>
 
 namespace kritase64
 {
+	enum Base64ErrorTypes { ERROR_UNKNOWN, ERROR_INVALID_BASE64_STRING, ERROR_INVALID_BASE64_CHARACTER, ERROR_VALUE_OUT_OF_RANGE };
+
+	class Base64Exception : public std::runtime_error
+	{
+	public:
+		Base64ErrorTypes type;
+
+		Base64Exception(Base64ErrorTypes type, std::string message);
+	};
+
 	/**
 	 * Initializes lookup tables.
 	 */
