@@ -1,5 +1,6 @@
 #include "kritase64.hpp"
 
+#include <cstdint>
 #include <unordered_map>
 
 const std::string BASE64_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -108,27 +109,19 @@ std::string kritase64::encode(std::vector<uint8_t> bytes)
 
 		int charValue = 0; // hextet 1
 		charValue = (bytes[startIndex] & (128 | 64 | 32 | 16 | 8 | 4)) >> 2;
-		std::cout << charValue <<  " " << std::flush;
 		result += alphabetConverter.valueToAlphabet(charValue);
 
 		charValue = 0; // hextet 2
 		charValue = ((bytes[startIndex] & (2 | 1)) << 4) | ((bytes[startIndex + 1] & (128 | 64 | 32 | 16)) >> 4);
-		std::cout << charValue <<  " " << std::flush;
 		result += alphabetConverter.valueToAlphabet(charValue);
 
 		charValue = 0; // hextet 3
 		charValue = ((bytes[startIndex + 1] & (8 | 4 | 2 | 1)) << 2) | ((bytes[startIndex + 2] & (128 | 64)) >> 6);
-		std::cout << charValue <<  " " << std::flush;
 		result += alphabetConverter.valueToAlphabet(charValue);
 
 		charValue = 0; // hextet 4
 		charValue = ((bytes[startIndex + 2] & (32 | 16 | 8 | 4 | 2 | 1)));
-		std::cout << charValue <<  " " << std::flush;
 		result += alphabetConverter.valueToAlphabet(charValue);
-
-		std::cout << std::endl;
-
-		result += " ";
 	}
 
 	int remainder = bytes.size() % 3;
@@ -140,14 +133,12 @@ std::string kritase64::encode(std::vector<uint8_t> bytes)
 
 		int charValue = 0; // hextet 1
 		charValue = (bytes[startIndex] & (128 | 64 | 32 | 16 | 8 | 4)) >> 2;
-		std::cout << charValue <<  " " << std::flush;
 		result += alphabetConverter.valueToAlphabet(charValue);
 
 		if (remainder >= 1)
 		{
 			charValue = 0; // hextet 2
 			charValue = ((bytes[startIndex] & (2 | 1)) << 4) | ((bytes[startIndex + 1] & (128 | 64 | 32 | 16)) >> 4);
-			std::cout << charValue <<  " " << std::flush;
 			result += alphabetConverter.valueToAlphabet(charValue);
 		}
 
@@ -155,16 +146,9 @@ std::string kritase64::encode(std::vector<uint8_t> bytes)
 		{
 			charValue = 0; // hextet 3
 			charValue = ((bytes[startIndex + 1] & (8 | 4 | 2 | 1)) << 2) | ((bytes[startIndex + 2] & (128 | 64)) >> 6);
-			std::cout << charValue <<  " " << std::flush;
 			result += alphabetConverter.valueToAlphabet(charValue);
 		}
 
-		/*charValue = 0; // hextet 4
-		charValue = ((bytes[startIndex + 2] & (32 | 16 | 8 | 4 | 2 | 1)));
-		std::cout << charValue <<  " " << std::flush;
-		result += alphabetConverter.valueToAlphabet(charValue);*/
-
-		std::cout <<remainder << std::endl;
 		for (int p = 0; p < (3 - remainder); ++p)
 		{
 			result += PAD;
@@ -179,4 +163,32 @@ std::vector<uint8_t> kritase64::decode(std::string string)
 	{
 		throw Base64Exception(ERROR_INVALID_BASE64_STRING, "Decoding invalid base64 string");
 	}
+
+	std::vector<uint8_t> result;
+
+	int padding = 0;
+	while (string[string.size() - 1 - padding] == '=')
+	{
+		++padding;
+	}
+
+	int quartets = (string.size() - padding) / 4;
+	for (int index = 0; index < quartets; ++index)
+	{
+		int startIndex = index * 4;
+
+		uint8_t octetValue = 0; // octet 1
+		octetValue = (alphabetConverter.alphabetToValue(string[startIndex]) << 2) | ((alphabetConverter.alphabetToValue(string[startIndex + 1]) & (32 | 16)) >> 4);
+		result.push_back(octetValue);
+
+		octetValue = 0; // octet 2
+		octetValue = ((alphabetConverter.alphabetToValue(string[startIndex + 1]) & (8 | 4 | 2 | 1)) << 4) | ((alphabetConverter.alphabetToValue(string[startIndex + 2]) & (32 | 16 | 8 | 4 )) >> 2);
+		result.push_back(octetValue);
+
+		octetValue = 0; // octet 3
+		octetValue = ((alphabetConverter.alphabetToValue(string[startIndex + 2]) & (2 | 1)) << 6) | alphabetConverter.alphabetToValue(string[startIndex + 3]);
+		result.push_back(octetValue);
+	}
+
+	return result;
 }

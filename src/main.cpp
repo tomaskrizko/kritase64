@@ -4,12 +4,20 @@
 
 int main(int argc, char* argv[])
 {
-	std::string str = "foo";
+	std::string str = "foobar";
 	std::cout << str << std::endl;
 	std::vector<uint8_t> bytes;
 	bytes.resize(str.length());
 	memcpy(bytes.data(), str.data(), str.length());
-	std::cout << kritase64::encode(bytes) << std::endl;
+	std::string encoded = kritase64::encode(bytes);
+	std::cout << encoded << std::endl;
+	bytes = kritase64::decode(encoded);
+	str = "";
+	for (auto b : bytes)
+	{
+		str += (char)b;
+	}
+	std::cout << str << std::endl;
 
 	return 0;
 }
