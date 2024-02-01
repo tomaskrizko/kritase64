@@ -171,8 +171,10 @@ std::vector<uint8_t> kritase64::decode(std::string string)
 	{
 		++padding;
 	}
+	int stringSize = string.size() - padding;
+	string = string.substr(0, stringSize);
 
-	int quartets = (string.size() - padding) / 4;
+	int quartets = stringSize / 4;
 	for (int index = 0; index < quartets; ++index)
 	{
 		int startIndex = index * 4;
@@ -188,6 +190,37 @@ std::vector<uint8_t> kritase64::decode(std::string string)
 		octetValue = 0; // octet 3
 		octetValue = ((alphabetConverter.alphabetToValue(string[startIndex + 2]) & (2 | 1)) << 6) | alphabetConverter.alphabetToValue(string[startIndex + 3]);
 		result.push_back(octetValue);
+	}
+
+	int remainder = stringSize % 4;
+	if (remainder > 0)
+	{
+		string += alphabetConverter.valueToAlphabet(0);
+
+		int startIndex = stringSize - remainder;
+
+		uint8_t octetValue = 0; // octet 1
+		octetValue = (alphabetConverter.alphabetToValue(string[startIndex]) << 2) | ((alphabetConverter.alphabetToValue(string[startIndex + 1]) & (32 | 16)) >> 4);
+		result.push_back(octetValue);
+
+		if (remainder >= 2)
+		{
+			octetValue = 0; // octet 2
+			octetValue = ((alphabetConverter.alphabetToValue(string[startIndex + 1]) & (8 | 4 | 2 | 1)) << 4) | ((alphabetConverter.alphabetToValue(string[startIndex + 2]) & (32 | 16 | 8 | 4 )) >> 2);
+			result.push_back(octetValue);
+		}
+
+		if (remainder >= 3)
+		{
+			octetValue = 0; // octet 3
+			octetValue = ((alphabetConverter.alphabetToValue(string[startIndex + 2]) & (2 | 1)) << 6) | alphabetConverter.alphabetToValue(string[startIndex + 3]);
+			result.push_back(octetValue);
+		}
+	}
+
+	if (padding > 0)
+	{
+		result.back() = result.back() >> (padding * 2);
 	}
 
 	return result;
