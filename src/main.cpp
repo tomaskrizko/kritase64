@@ -1,23 +1,30 @@
 #include <iostream>
 #include "kritase64.hpp"
 #include <memory.h>
+#include <fstream>
 
 int main(int argc, char* argv[])
 {
-	std::string str = "foob";
-	std::cout << str << std::endl;
+	/*
+	std::fstream file(argv[1], std::ios::in | std::ios::binary);
+
 	std::vector<uint8_t> bytes;
-	bytes.resize(str.length());
-	memcpy(bytes.data(), str.data(), str.length());
-	std::string encoded = kritase64::encode(bytes);
-	std::cout << encoded << std::endl;
-	bytes = kritase64::decode(encoded);
-	str = "";
-	for (auto b : bytes)
+	while (!file.eof())
 	{
-		str += (char)b;
+		uint8_t b;
+		file.read((char*)&b, 1);
+		bytes.push_back(b);
 	}
-	std::cout << str << std::endl;
+	std::string base64 = kritase64::encode(bytes);
+	std::cout << base64 << std::ends;
+	*/
+
+	///*
+	std::vector<uint8_t> bytes = kritase64::decode(argv[1]);
+	std::fstream file("icon.png", std::ios::out | std::ios::trunc | std::ios::binary);
+	file.write((char*)bytes.data(), bytes.size());
+	file.close();
+	//*/
 
 	return 0;
 }
