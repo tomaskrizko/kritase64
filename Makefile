@@ -4,7 +4,7 @@ SRC=src/*.cpp
 INCLUDE=-Iinclude
 
 FLAGS=-std=c++17 -Wall
-DEBUG_FLAGS=-O0 -g -fsanitize=undefined
+DEBUG_FLAGS=-O0 -g -fsanitize=undefined -fsanitize=address
 
 OUTPUT=kritase64
 

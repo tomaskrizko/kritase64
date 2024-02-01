@@ -127,9 +127,7 @@ std::string kritase64::encode(std::vector<uint8_t> bytes)
 	int remainder = bytes.size() % 3;
 	if (remainder > 0)
 	{
-		bytes.push_back(0);
-
-		int startIndex = bytes.size() - remainder - 1;
+		int startIndex = bytes.size() - remainder;
 
 		int charValue = 0; // hextet 1
 		charValue = (bytes[startIndex] & (128 | 64 | 32 | 16 | 8 | 4)) >> 2;
@@ -138,18 +136,23 @@ std::string kritase64::encode(std::vector<uint8_t> bytes)
 		if (remainder >= 1)
 		{
 			charValue = 0; // hextet 2
-			charValue = ((bytes[startIndex] & (2 | 1)) << 4) | ((bytes[startIndex + 1] & (128 | 64 | 32 | 16)) >> 4);
+			charValue = (bytes[startIndex] & (2 | 1)) << 4;
+			if (remainder >= 2) charValue |= ((bytes[startIndex + 1] & (128 | 64 | 32 | 16)) >> 4);
 			result += alphabetConverter.valueToAlphabet(charValue);
 		}
 
 		if (remainder >= 2)
 		{
+			/*charValue = 0; // hextet 2
+			charValue = ((bytes[startIndex] & (2 | 1)) << 4) | ((bytes[startIndex + 1] & (128 | 64 | 32 | 16)) >> 4);
+			result += alphabetConverter.valueToAlphabet(charValue);*/
+
 			charValue = 0; // hextet 3
-			charValue = ((bytes[startIndex + 1] & (8 | 4 | 2 | 1)) << 2) | ((bytes[startIndex + 2] & (128 | 64)) >> 6);
+			charValue = (bytes[startIndex + 1] & (8 | 4 | 2 | 1)) << 2;
 			result += alphabetConverter.valueToAlphabet(charValue);
 		}
 
-		for (int p = 0; p < (3 - remainder); ++p)
+		for (int p = 0; p <(3 - remainder); ++p)
 		{
 			result += PAD;
 		}
@@ -195,32 +198,28 @@ std::vector<uint8_t> kritase64::decode(std::string string)
 	int remainder = stringSize % 4;
 	if (remainder > 0)
 	{
-		string += alphabetConverter.valueToAlphabet(0);
+		std::cout <<remainder << std::endl;
+		//string += alphabetConverter.valueToAlphabet(0);
 
 		int startIndex = stringSize - remainder;
 
 		uint8_t octetValue = 0; // octet 1
-		octetValue = (alphabetConverter.alphabetToValue(string[startIndex]) << 2) | ((alphabetConverter.alphabetToValue(string[startIndex + 1]) & (32 | 16)) >> 4);
+		octetValue = (alphabetConverter.alphabetToValue(string[startIndex]) << 2);
+		if (remainder >= 2) octetValue |= ((alphabetConverter.alphabetToValue(string[startIndex + 1]) & (32 | 16)) >> 4);
 		result.push_back(octetValue);
 
 		if (remainder >= 2)
 		{
 			octetValue = 0; // octet 2
-			octetValue = ((alphabetConverter.alphabetToValue(string[startIndex + 1]) & (8 | 4 | 2 | 1)) << 4) | ((alphabetConverter.alphabetToValue(string[startIndex + 2]) & (32 | 16 | 8 | 4 )) >> 2);
-			result.push_back(octetValue);
-		}
-
-		if (remainder >= 3)
-		{
-			octetValue = 0; // octet 3
-			octetValue = ((alphabetConverter.alphabetToValue(string[startIndex + 2]) & (2 | 1)) << 6) | alphabetConverter.alphabetToValue(string[startIndex + 3]);
+			octetValue = ((alphabetConverter.alphabetToValue(string[startIndex + 1]) & (8 | 4 | 2 | 1)) << 4);
+			if (remainder >= 3) octetValue |= ((alphabetConverter.alphabetToValue(string[startIndex + 2]) & (32 | 16 | 8 | 4 )) >> 2);
 			result.push_back(octetValue);
 		}
 	}
 
 	if (padding > 0)
 	{
-		result.back() = result.back() >> (padding * 2);
+		//result.back() = result.back() >> (padding * 2); // TODO: Causes issues (i think)
 	}
 
 	return result;
