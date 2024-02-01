@@ -195,24 +195,26 @@ std::vector<uint8_t> kritase64::decode(std::string string)
 		result.push_back(octetValue);
 	}
 
-	int remainder = stringSize % 4;
-	if (remainder > 0)
+	if (padding > 0)
 	{
-		std::cout <<remainder << std::endl;
-		//string += alphabetConverter.valueToAlphabet(0);
+		int startIndex = quartets * 4;
 
-		int startIndex = stringSize - remainder;
-
-		uint8_t octetValue = 0; // octet 1
-		octetValue = (alphabetConverter.alphabetToValue(string[startIndex]) << 2);
-		if (remainder >= 2) octetValue |= ((alphabetConverter.alphabetToValue(string[startIndex + 1]) & (32 | 16)) >> 4);
-		result.push_back(octetValue);
-
-		if (remainder >= 2)
+		uint8_t octetValue = 0;
+		if (padding == 2)
 		{
+			octetValue = 0; // octet 1
+			octetValue = (alphabetConverter.alphabetToValue(string[startIndex]) << 2) |((alphabetConverter.alphabetToValue(string[startIndex + 1]) & (32 | 16)) >> 4);
+			result.push_back(octetValue);
+		}
+
+		if (padding == 1)
+		{
+			octetValue = 0; // octet 1
+			octetValue = (alphabetConverter.alphabetToValue(string[startIndex]) << 2) |((alphabetConverter.alphabetToValue(string[startIndex + 1]) & (32 | 16)) >> 4);
+			result.push_back(octetValue);
+
 			octetValue = 0; // octet 2
-			octetValue = ((alphabetConverter.alphabetToValue(string[startIndex + 1]) & (8 | 4 | 2 | 1)) << 4);
-			if (remainder >= 3) octetValue |= ((alphabetConverter.alphabetToValue(string[startIndex + 2]) & (32 | 16 | 8 | 4 )) >> 2);
+			octetValue = ((alphabetConverter.alphabetToValue(string[startIndex + 1]) & (8 | 4 | 2 | 1)) << 4) | ((alphabetConverter.alphabetToValue(string[startIndex + 2]) & (32 | 16 | 8 | 4 )) >> 2);
 			result.push_back(octetValue);
 		}
 	}
