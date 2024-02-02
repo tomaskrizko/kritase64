@@ -29,6 +29,10 @@ namespace kritase64
 
 	typedef std::basic_string<uint8_t> Buffer;
 
+	typedef std::basic_stringstream<uint8_t> Bufferstream;
+	typedef std::basic_istringstream<uint8_t> Ibufferstream;
+	typedef std::basic_ostringstream<uint8_t> Obufferstream;
+
 	/**
 	 * Checks, whether a given string is a valid base64 string.
 	 *
