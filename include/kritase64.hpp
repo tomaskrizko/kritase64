@@ -8,6 +8,7 @@
 #ifndef KRITASE64_HPP
 #define KRITASE64_HPP
 
+#include <sstream>
 #include <vector>
 #include <string>
 #include <stdint.h>
@@ -26,10 +27,7 @@ namespace kritase64
 		Base64Exception(Base64ErrorTypes type, std::string message);
 	};
 
-	/**
-	 * Initializes lookup tables.
-	 */
-	void initialize();
+	typedef std::basic_string<uint8_t> Buffer;
 
 	/**
 	 * Checks, whether a given string is a valid base64 string.
@@ -45,7 +43,7 @@ namespace kritase64
 	 * @param bytes The bytes to encode.
 	 * @return The resulting base64 string.
 	 */
-	std::string encode(std::vector<uint8_t> bytes);
+	std::string encode(Buffer bytes);
 
 	/**
 	 * Decodes a base64 string to bytes.
@@ -53,7 +51,7 @@ namespace kritase64
 	 * @param string The base64 string to decode.
 	 * @return The resulting bytes.
 	 */
-	std::vector<uint8_t> decode(std::string string);
+	Buffer decode(std::string string);
 };
 
 #endif

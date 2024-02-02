@@ -1,3 +1,4 @@
+#include <cstdint>
 #include <iostream>
 #include "kritase64.hpp"
 #include <memory.h>
@@ -8,7 +9,7 @@ int main(int argc, char* argv[])
 	///*
 	std::fstream file(argv[1], std::ios::in | std::ios::binary);
 
-	std::vector<uint8_t> bytes;
+	kritase64::Buffer bytes;
 	while (!file.eof())
 	{
 		uint8_t b;

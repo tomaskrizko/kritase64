@@ -97,7 +97,7 @@ bool kritase64::check(std::string string)
 }
 #include <iostream> // TODO
 
-std::string kritase64::encode(std::vector<uint8_t> bytes)
+std::string kritase64::encode(kritase64::Buffer bytes)
 {
 	//initialize();
 	std::string result = "";
@@ -160,14 +160,14 @@ std::string kritase64::encode(std::vector<uint8_t> bytes)
 
 	return result;
 }
-std::vector<uint8_t> kritase64::decode(std::string string)
+kritase64::Buffer kritase64::decode(std::string string)
 {
 	if (!check(string))
 	{
 		throw Base64Exception(ERROR_INVALID_BASE64_STRING, "Decoding invalid base64 string");
 	}
 
-	std::vector<uint8_t> result;
+	Buffer result;
 
 	int padding = 0;
 	while (string[string.size() - 1 - padding] == '=')
@@ -217,11 +217,6 @@ std::vector<uint8_t> kritase64::decode(std::string string)
 			octetValue = ((alphabetConverter.alphabetToValue(string[startIndex + 1]) & (8 | 4 | 2 | 1)) << 4) | ((alphabetConverter.alphabetToValue(string[startIndex + 2]) & (32 | 16 | 8 | 4 )) >> 2);
 			result.push_back(octetValue);
 		}
-	}
-
-	if (padding > 0)
-	{
-		//result.back() = result.back() >> (padding * 2); // TODO: Causes issues (i think)
 	}
 
 	return result;
