@@ -8,6 +8,7 @@
 #ifndef KRITASE64_HPP
 #define KRITASE64_HPP
 
+#include <cstdint>
 #include <sstream>
 #include <vector>
 #include <string>
@@ -42,12 +43,19 @@ namespace kritase64
 	bool check(std::string string);
 
 	/**
-	 * Encodes bytes as a base64 string.
-	 *
-	 * @param bytes The bytes to encode.
+	 * Encodes a buffer as a base64 string.
+	 * @param buffer Pointer to the beginning of the buffer.
+	 * @param size Size of the buffer.
 	 * @return The resulting base64 string.
 	 */
-	std::string encode(Buffer bytes);
+	std::string encode(const uint8_t* buffer, size_t size);
+	/**
+	 * Encodes bytes as a base64 string.
+	 *
+	 * @param buffsr The buffer to encode.
+	 * @return The resulting base64 string.
+	 */
+	std::string encode(Buffer buffer);
 
 	/**
 	 * Decodes a base64 string to bytes.
