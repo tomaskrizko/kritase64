@@ -50,18 +50,25 @@ namespace kritase64
 	 */
 	std::string encode(const uint8_t* buffer, size_t size);
 	/**
-	 * Encodes bytes as a base64 string.
+	 * Encodes a buffer as a base64 string.
 	 *
 	 * @param buffsr The buffer to encode.
 	 * @return The resulting base64 string.
 	 */
 	std::string encode(Buffer buffer);
+	/**
+	 * Encodes a string as a base64 string.
+	 *
+	 * @param string The string to encode.
+	 * @return The resulting base64 string.
+	 */
+	std::string encode(std::string string);
 
 	/**
-	 * Decodes a base64 string to bytes.
+	 * Decodes a base64 string to a buffer.
 	 *
 	 * @param string The base64 string to decode.
-	 * @return The resulting bytes.
+	 * @return The resulting buffer.
 	 */
 	Buffer decode(std::string string);
 };

@@ -14,7 +14,7 @@ int main(int argc, char* argv[])
 	stream << (unsigned char*)"hello world"; // TODO: Figure out why typecast to unsigned char* (aka uint8_t) is necessary.
 	/*std::string test = "test";
 	stream << test;*/ // TODO: Causes compile error.
-	std::cout << kritase64::encode((uint8_t*)stream.str().data(), stream.str().size()) << std::ends;
+	std::cout << kritase64::encode(stream.str()) << std::ends;
 
 	return 0;
 }

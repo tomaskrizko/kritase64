@@ -1,3 +1,4 @@
+
 #include "kritase64.hpp"
 
 #include <cstdint>
@@ -165,6 +166,11 @@ std::string kritase64::encode(Buffer buffer)
 {
 	return encode(buffer.data(), buffer.size());
 }
+std::string kritase64::encode(std::string string)
+{
+	return encode((uint8_t*)string.data(), string.size());
+}
+
 kritase64::Buffer kritase64::decode(std::string string)
 {
 	if (!check(string))
