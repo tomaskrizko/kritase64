@@ -1,6 +1,4 @@
-
 #include "kritase64.hpp"
-
 #include <cstdint>
 #include <string>
 #include <unordered_map>
@@ -231,4 +229,9 @@ kritase64::Buffer kritase64::decode(std::string string)
 	}
 
 	return result;
+}
+
+std::string kritase64::Stream::base64() const
+{
+	return encode(str());
 }

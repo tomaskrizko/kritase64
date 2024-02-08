@@ -30,10 +30,6 @@ namespace kritase64
 
 	typedef std::basic_string<uint8_t> Buffer;
 
-	typedef std::basic_stringstream<uint8_t> Bufferstream;
-	typedef std::basic_istringstream<uint8_t> Ibufferstream;
-	typedef std::basic_ostringstream<uint8_t> Obufferstream;
-
 	/**
 	 * Checks, whether a given string is a valid base64 string.
 	 *
@@ -44,6 +40,7 @@ namespace kritase64
 
 	/**
 	 * Encodes a buffer as a base64 string.
+	 *
 	 * @param buffer Pointer to the beginning of the buffer.
 	 * @param size Size of the buffer.
 	 * @return The resulting base64 string.
@@ -71,6 +68,22 @@ namespace kritase64
 	 * @return The resulting buffer.
 	 */
 	Buffer decode(std::string string);
+
+	class Stream : public std::stringstream
+	{
+	public:
+		std::string base64() const;
+	};
+	class Istream : public std::istringstream
+	{
+	public:
+		std::string  base64() const;
+	};
+	class Ostream : public std::ostringstream
+	{
+	public:
+		std::string base64() const;
+	};
 };
 
 #endif
