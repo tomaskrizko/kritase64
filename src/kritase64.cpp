@@ -1,5 +1,7 @@
 #include "kritase64.hpp"
 #include <cstdint>
+#include <cstdio>
+#include <sstream>
 #include <string>
 #include <unordered_map>
 
@@ -64,7 +66,7 @@ kritase64::Base64Exception::Base64Exception(kritase64::Base64ErrorTypes type, st
 	this->type = type;
 }
 
-bool kritase64::check(std::string string)
+bool kritase64::check(const std::string& string)
 {
 	//initialize();
 	for (int index = 0; index < string.length(); ++index)
@@ -160,16 +162,16 @@ std::string kritase64::encode(const uint8_t* buffer, size_t size)
 
 	return result;
 }
-std::string kritase64::encode(Buffer buffer)
+std::string kritase64::encode(const Buffer& buffer)
 {
 	return encode(buffer.data(), buffer.size());
 }
-std::string kritase64::encode(std::string string)
+std::string kritase64::encode(const std::string& string)
 {
 	return encode((uint8_t*)string.data(), string.size());
 }
 
-kritase64::Buffer kritase64::decode(std::string string)
+kritase64::Buffer kritase64::decode(const std::string& string)
 {
 	if (!check(string))
 	{
@@ -184,7 +186,7 @@ kritase64::Buffer kritase64::decode(std::string string)
 		++padding;
 	}
 	int stringSize = string.size() - padding;
-	string = string.substr(0, stringSize);
+	std::string data = string.substr(0, stringSize);
 
 	int quartets = stringSize / 4;
 	for (int index = 0; index < quartets; ++index)
@@ -192,15 +194,15 @@ kritase64::Buffer kritase64::decode(std::string string)
 		int startIndex = index * 4;
 
 		uint8_t octetValue = 0; // octet 1
-		octetValue = (alphabetConverter.alphabetToValue(string[startIndex]) << 2) | ((alphabetConverter.alphabetToValue(string[startIndex + 1]) & (32 | 16)) >> 4);
+		octetValue = (alphabetConverter.alphabetToValue(data[startIndex]) << 2) | ((alphabetConverter.alphabetToValue(data[startIndex + 1]) & (32 | 16)) >> 4);
 		result.push_back(octetValue);
 
 		octetValue = 0; // octet 2
-		octetValue = ((alphabetConverter.alphabetToValue(string[startIndex + 1]) & (8 | 4 | 2 | 1)) << 4) | ((alphabetConverter.alphabetToValue(string[startIndex + 2]) & (32 | 16 | 8 | 4 )) >> 2);
+		octetValue = ((alphabetConverter.alphabetToValue(data[startIndex + 1]) & (8 | 4 | 2 | 1)) << 4) | ((alphabetConverter.alphabetToValue(data[startIndex + 2]) & (32 | 16 | 8 | 4 )) >> 2);
 		result.push_back(octetValue);
 
 		octetValue = 0; // octet 3
-		octetValue = ((alphabetConverter.alphabetToValue(string[startIndex + 2]) & (2 | 1)) << 6) | alphabetConverter.alphabetToValue(string[startIndex + 3]);
+		octetValue = ((alphabetConverter.alphabetToValue(data[startIndex + 2]) & (2 | 1)) << 6) | alphabetConverter.alphabetToValue(data[startIndex + 3]);
 		result.push_back(octetValue);
 	}
 
@@ -212,18 +214,18 @@ kritase64::Buffer kritase64::decode(std::string string)
 		if (padding == 2)
 		{
 			octetValue = 0; // octet 1
-			octetValue = (alphabetConverter.alphabetToValue(string[startIndex]) << 2) |((alphabetConverter.alphabetToValue(string[startIndex + 1]) & (32 | 16)) >> 4);
+			octetValue = (alphabetConverter.alphabetToValue(data[startIndex]) << 2) |((alphabetConverter.alphabetToValue(data[startIndex + 1]) & (32 | 16)) >> 4);
 			result.push_back(octetValue);
 		}
 
 		if (padding == 1)
 		{
 			octetValue = 0; // octet 1
-			octetValue = (alphabetConverter.alphabetToValue(string[startIndex]) << 2) |((alphabetConverter.alphabetToValue(string[startIndex + 1]) & (32 | 16)) >> 4);
+			octetValue = (alphabetConverter.alphabetToValue(data[startIndex]) << 2) |((alphabetConverter.alphabetToValue(data[startIndex + 1]) & (32 | 16)) >> 4);
 			result.push_back(octetValue);
 
 			octetValue = 0; // octet 2
-			octetValue = ((alphabetConverter.alphabetToValue(string[startIndex + 1]) & (8 | 4 | 2 | 1)) << 4) | ((alphabetConverter.alphabetToValue(string[startIndex + 2]) & (32 | 16 | 8 | 4 )) >> 2);
+			octetValue = ((alphabetConverter.alphabetToValue(data[startIndex + 1]) & (8 | 4 | 2 | 1)) << 4) | ((alphabetConverter.alphabetToValue(data[startIndex + 2]) & (32 | 16 | 8 | 4 )) >> 2);
 			result.push_back(octetValue);
 		}
 	}
@@ -231,7 +233,22 @@ kritase64::Buffer kritase64::decode(std::string string)
 	return result;
 }
 
+std::string kritase64::Stream::str() const
+{
+	return std::stringstream::str();
+}
+
+kritase64::Stream::Stream(const std::string& base64, std::ios_base::openmode mode) : std::stringstream(mode)
+{
+	this->base64(base64);
+}
+
 std::string kritase64::Stream::base64() const
 {
 	return encode(str());
+}
+void kritase64::Stream::base64(const std::string& base64)
+{
+	Buffer data = decode(base64);
+	std::stringstream::str(std::string((char*)data.data(), data.size()));
 }

@@ -7,7 +7,8 @@
 
 int main(int argc, char* argv[])
 {
-	kritase64::Stream stream;
+	//std::stringstream stream("s")
+	kritase64::Stream stream("aGVsbG8gd29ybGQ=", std::ios::in | std::ios::out | std::ios::ate);
 
 	stream << "hello world";
 

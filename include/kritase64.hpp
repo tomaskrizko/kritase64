@@ -36,7 +36,7 @@ namespace kritase64
 	 * @param string The string to check.
 	 * @return true, if the given string is a valid base64 string, false otherwise.
 	 */
-	bool check(std::string string);
+	bool check(const std::string& string);
 
 	/**
 	 * Encodes a buffer as a base64 string.
@@ -52,14 +52,14 @@ namespace kritase64
 	 * @param buffsr The buffer to encode.
 	 * @return The resulting base64 string.
 	 */
-	std::string encode(Buffer buffer);
+	std::string encode(const Buffer& buffer);
 	/**
 	 * Encodes a string as a base64 string.
 	 *
 	 * @param string The string to encode.
 	 * @return The resulting base64 string.
 	 */
-	std::string encode(std::string string);
+	std::string encode(const std::string& string);
 
 	/**
 	 * Decodes a base64 string to a buffer.
@@ -67,12 +67,18 @@ namespace kritase64
 	 * @param string The base64 string to decode.
 	 * @return The resulting buffer.
 	 */
-	Buffer decode(std::string string);
+	Buffer decode(const std::string& string);
 
 	class Stream : public std::stringstream
 	{
+	protected:
+		std::string str() const; // Hiding base method
+		
 	public:
+		Stream(const std::string& base64 = "", std::ios_base::openmode mode = std::ios::in | std::ios::out);
+		
 		std::string base64() const;
+		void base64(const std::string& base64);
 	};
 	class Istream : public std::istringstream
 	{
