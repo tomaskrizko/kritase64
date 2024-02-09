@@ -252,3 +252,43 @@ void kritase64::Stream::base64(const std::string& base64)
 	Buffer data = decode(base64);
 	std::stringstream::str(std::string((char*)data.data(), data.size()));
 }
+
+std::string kritase64::Istream::str() const
+{
+	return std::istringstream::str();
+}
+
+kritase64::Istream::Istream(const std::string& base64, std::ios_base::openmode mode) : std::istringstream(mode)
+{
+	this->base64(base64);
+}
+
+std::string kritase64::Istream::base64() const
+{
+	return encode(str());
+}
+void kritase64::Istream::base64(const std::string& base64)
+{
+	Buffer data = decode(base64);
+	std::istringstream::str(std::string((char*)data.data(), data.size()));
+}
+
+std::string kritase64::Ostream::str() const
+{
+	return std::ostringstream::str();
+}
+
+kritase64::Ostream::Ostream(const std::string& base64, std::ios_base::openmode mode) : std::ostringstream(mode)
+{
+	this->base64(base64);
+}
+
+std::string kritase64::Ostream::base64() const
+{
+	return encode(str());
+}
+void kritase64::Ostream::base64(const std::string& base64)
+{
+	Buffer data = decode(base64);
+	std::ostringstream::str(std::string((char*)data.data(), data.size()));
+}

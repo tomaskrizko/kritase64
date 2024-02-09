@@ -9,6 +9,7 @@
 #define KRITASE64_HPP
 
 #include <cstdint>
+#include <ios>
 #include <sstream>
 #include <vector>
 #include <string>
@@ -82,13 +83,25 @@ namespace kritase64
 	};
 	class Istream : public std::istringstream
 	{
+	protected:
+		std::string str() const; // Hiding base method
+
 	public:
+		Istream(const std::string& base64 = "", std::ios_base::openmode = std::ios::in);
+		
 		std::string  base64() const;
+		void base64(const std::string& base64);
 	};
 	class Ostream : public std::ostringstream
 	{
+	protected:
+		std::string str() const; // Hiding base method
+		
 	public:
+		Ostream(const std::string& base64 = "", std::ios_base::openmode = std::ios::out);
+		
 		std::string base64() const;
+		void base64(const std::string& base64);
 	};
 };
 
