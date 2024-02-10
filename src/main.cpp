@@ -10,7 +10,8 @@ void usage()
 	std::cout << "Usage:\n";
 	std::cout << "kritase64 encode [FILE]\n";
 	std::cout << "kritase64 decode [base64 string]\n";
-	std::cout << "If no FILE or base64 string is provided, input is taken from standard input. Output is to standard output." << std::endl;
+	std::cout << "If no FILE or base64 string is provided, input is taken from standard input.\n";
+	std::cout << "Output is to standard output." << std::endl;
 }
 
 template <class T>
