@@ -4,8 +4,12 @@
 #include <sstream>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 
 const std::string BASE64_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+const std::string BASE64_ALTERNATIVE_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+const std::string BASE64_IGNORED = " \t\n\r"; // These characters will be ignored when decoding.
+
 const char PAD = '=';
 
 class AlphabetConverter
@@ -13,6 +17,7 @@ class AlphabetConverter
 private:
 	std::unordered_map<int, char> VALUE_TO_ALPHABET;
 	std::unordered_map<char, int> ALPHABET_TO_VALUE;
+	std::unordered_set<char> IGNORED;
 
 public:
 	AlphabetConverter()
@@ -21,8 +26,13 @@ public:
 		{
 			VALUE_TO_ALPHABET[index] = BASE64_ALPHABET[index];
 			ALPHABET_TO_VALUE[BASE64_ALPHABET[index]] = index;
+			ALPHABET_TO_VALUE[BASE64_ALTERNATIVE_ALPHABET[index]] = index;
 		}
-		//initialized = true;
+
+		for (char c : BASE64_IGNORED)
+		{
+			IGNORED.insert(c);
+		}
 	}
 
 	bool isInAlphabet(char character) const
@@ -32,6 +42,10 @@ public:
 	bool isInRange(int value) const
 	{
 		return (VALUE_TO_ALPHABET.count(value) > 0);
+	}
+	bool isIgnored(char c) const
+	{
+		return (IGNORED.count(c) > 0);
 	}
 
 	int alphabetToValue(char character) const
@@ -50,16 +64,21 @@ public:
 		}
 		return VALUE_TO_ALPHABET.at(value);
 	}
+	std::string stripIgnored(std::string base64) const
+	{
+		for (auto it = base64.begin(); it != base64.end();)
+		{
+			if (isIgnored(*it))
+			{
+				it = base64.erase(it);
+				continue;
+			}
+			++it;
+		}
+		return base64;
+	}
 };
 AlphabetConverter alphabetConverter;
-
-/*bool initialized = false;
-void kritase64::initialize()
-{
-	if (!initialized)
-	{
-
-}*/
 
 kritase64::Base64Exception::Base64Exception(kritase64::Base64ErrorTypes type, std::string message) : std::runtime_error(message)
 {
@@ -68,7 +87,6 @@ kritase64::Base64Exception::Base64Exception(kritase64::Base64ErrorTypes type, st
 
 bool kritase64::check(const std::string& string)
 {
-	//initialize();
 	for (int index = 0; index < string.length(); ++index)
 	{
 		char c = string[index];
@@ -97,11 +115,9 @@ bool kritase64::check(const std::string& string)
 	}
 	return true;
 }
-#include <iostream> // TODO
 
 std::string kritase64::encode(const uint8_t* buffer, size_t size)
 {
-	//initialize();
 	std::string result = "";
 
 	int triplets = size / 3;
@@ -171,8 +187,9 @@ std::string kritase64::encode(const std::string& string)
 	return encode((uint8_t*)string.data(), string.size());
 }
 
-kritase64::Buffer kritase64::decode(const std::string& string)
+kritase64::Buffer kritase64::decode(std::string string)
 {
+	string = alphabetConverter.stripIgnored(string);
 	if (!check(string))
 	{
 		throw Base64Exception(ERROR_INVALID_BASE64_STRING, "Decoding invalid base64 string");
@@ -181,7 +198,7 @@ kritase64::Buffer kritase64::decode(const std::string& string)
 	Buffer result;
 
 	int padding = 0;
-	while (string[string.size() - 1 - padding] == '=')
+	while (string[string.size() - 1 - padding] == PAD)
 	{
 		++padding;
 	}

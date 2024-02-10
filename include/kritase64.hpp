@@ -2,6 +2,7 @@
  *	This project implements the base64 encoding (RFC 4648).
  *	The base64 alphabet is as follows:
  *	ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/
+ *	Alternative: ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_
  *	Pad: =
  */
 
@@ -68,7 +69,7 @@ namespace kritase64
 	 * @param string The base64 string to decode.
 	 * @return The resulting buffer.
 	 */
-	Buffer decode(const std::string& string);
+	Buffer decode(std::string string);
 
 	class Stream : public std::stringstream
 	{
