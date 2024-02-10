@@ -13,6 +13,19 @@ void usage()
 	std::cout << "If no FILE or base64 string is provided, input is taken from standard input. Output is to standard output." << std::endl;
 }
 
+template <class T>
+std::basic_string<T> everythingFromIO(std::istream& stream)
+{
+	std::basic_string<T> res;
+	while (!stream.eof())
+	{
+		T byte;
+		stream.read((char*)&byte, 1);
+		if (!stream.eof()) res.push_back(byte);
+	}
+	return res;
+}
+
 int main(int argc, char* argv[])
 {
 	if (argc <= 1)
@@ -24,23 +37,13 @@ int main(int argc, char* argv[])
 	if (argv[1] == (std::string)"encode")
 	{
 		kritase64::Stream stream("", std::ios::out | std::ios::binary);
-		while (!std::cin.eof())
-		{
-			char c;
-			std::cin.read(&c, 1);
-			if (!std::cin.eof()) stream.write(&c, 1);
-		}
+		kritase64::Buffer data = everythingFromIO<uint8_t>(std::cin);
+		stream.write((char*)data.data(), data.size());
 		std::cout << stream.base64();
 	}
 	else if (argv[1] == (std::string)"decode")
 	{
-		std::string base64;
-		while (!std::cin.eof())
-		{
-			char c;
-			std::cin.read(&c, 1);
-			if (!std::cin.eof()) base64.push_back(c);
-		}
+		std::string base64 = everythingFromIO<char>(std::cin);
 		kritase64::Buffer data = kritase64::decode(base64);
 		std::cout.write((char*)data.data(), data.size());
 	}
