@@ -37,13 +37,30 @@ int main(int argc, char* argv[])
 	if (argv[1] == (std::string)"encode")
 	{
 		kritase64::Stream stream("", std::ios::out | std::ios::binary);
-		kritase64::Buffer data = everythingFromIO<uint8_t>(std::cin);
+		kritase64::Buffer data;
+		if (argc == 2)
+		{
+			data = everythingFromIO<uint8_t>(std::cin);
+		}
+		else
+		{
+			std::ifstream file(argv[2], std::ios::in | std::ios::binary);
+			data = everythingFromIO<uint8_t>(file);
+		}
 		stream.write((char*)data.data(), data.size());
 		std::cout << stream.base64();
 	}
 	else if (argv[1] == (std::string)"decode")
 	{
-		std::string base64 = everythingFromIO<char>(std::cin);
+		std::string base64;
+		if (argc == 2)
+		{
+			base64 = everythingFromIO<char>(std::cin);
+		}
+		else
+		{
+			base64 = argv[2];
+		}
 		kritase64::Buffer data = kritase64::decode(base64);
 		std::cout.write((char*)data.data(), data.size());
 	}
