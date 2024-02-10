@@ -8,10 +8,10 @@
 void usage()
 {
 	std::cout << "Usage:\n";
-	std::cout << "kritase64 encode [FILE]\n";
-	std::cout << "kritase64 decode [base64 string]\n";
+	std::cout << "kritase64 encode [FILE] [OUTPUT FILE]\n";
+	std::cout << "kritase64 decode [base64 string] [OUTPUT FILE]\n";
 	std::cout << "If no FILE or base64 string is provided, input is taken from standard input.\n";
-	std::cout << "Output is to standard output." << std::endl;
+	std::cout << "Output is to OUTPUT FILE, or to standard output, if no OUTPUT FILE is provided." << std::endl;
 }
 
 template <class T>
@@ -39,7 +39,7 @@ int main(int argc, char* argv[])
 	{
 		kritase64::Stream stream("", std::ios::out | std::ios::binary);
 		kritase64::Buffer data;
-		if (argc == 2)
+		if (argc <= 2)
 		{
 			data = everythingFromIO<uint8_t>(std::cin);
 		}
@@ -47,14 +47,24 @@ int main(int argc, char* argv[])
 		{
 			std::ifstream file(argv[2], std::ios::in | std::ios::binary);
 			data = everythingFromIO<uint8_t>(file);
+			file.close();
 		}
 		stream.write((char*)data.data(), data.size());
-		std::cout << stream.base64();
+		if (argc <= 3)
+		{
+			std::cout << stream.base64();
+		}
+		else
+		{
+			std::ofstream output(argv[3], std::ios::out | std::ios::trunc);
+			output << stream.base64();
+			output.close();
+		}
 	}
 	else if (argv[1] == (std::string)"decode")
 	{
 		std::string base64;
-		if (argc == 2)
+		if (argc <= 2)
 		{
 			base64 = everythingFromIO<char>(std::cin);
 		}
@@ -63,7 +73,16 @@ int main(int argc, char* argv[])
 			base64 = argv[2];
 		}
 		kritase64::Buffer data = kritase64::decode(base64);
-		std::cout.write((char*)data.data(), data.size());
+		if (argc <= 3)
+		{
+			std::cout.write((char*)data.data(), data.size());
+		}
+		else
+		{
+			std::ofstream output(argv[3], std::ios::out | std::ios::binary | std::ios::trunc);
+			output.write((char*)data.data(), data.size());
+			output.close();
+		}
 	}
 	else
 	{
