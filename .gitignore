@@ -2,4 +2,8 @@ kritase64
 compile_commands.json
 .cache
 *.cache
-*.in
+src/*.o
+Makefile
+config.*
+src/.deps
+src/.dirstamp
