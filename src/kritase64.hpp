@@ -99,10 +99,26 @@ namespace kritase64
 	public:
 		Stream(const std::string& base64 = "", std::ios_base::openmode mode = std::ios::in | std::ios::out);
 		
+		/**
+		 * @return The raw, unencoded buffer.
+		 */
 		Buffer buffer() const;
+		/**
+		 * Sets the raw, unencoded buffer.
+		 *
+		 * @param buffer The buffer to set.
+		 */
 		void buffer(const Buffer& buffer);
 
+		/**
+		 * @return The base64 string representing the data in this stream.
+		 */
 		std::string base64() const;
+		/**
+		 * Loads the specified base64 string into the stream.
+		 *
+		 * @param base64 The base64 string to load.
+		 */
 		void base64(const std::string& base64);
 	};
 	class Istream : public std::istringstream
@@ -113,10 +129,26 @@ namespace kritase64
 	public:
 		Istream(const std::string& base64 = "", std::ios_base::openmode = std::ios::in);
 		
+		/**
+		 * @return The raw, unencoded buffer.
+		 */
 		Buffer buffer() const;
+		/**
+		 * Sets the raw, unencoded buffer.
+		 *
+		 * @param buffer The buffer to set.
+		 */
 		void buffer(const Buffer& buffer);
 
-		std::string  base64() const;
+		/**
+		 * @return The base64 string representing the data in this stream.
+		 */
+		std::string base64() const;
+		/**
+		 * Loads the specified base64 string into the stream.
+		 *
+		 * @param base64 The base64 string to load.
+		 */
 		void base64(const std::string& base64);
 	};
 	class Ostream : public std::ostringstream
@@ -127,10 +159,26 @@ namespace kritase64
 	public:
 		Ostream(const std::string& base64 = "", std::ios_base::openmode = std::ios::out);
 		
+		/**
+		 * @return The raw, unencoded buffer.
+		 */
 		Buffer buffer() const;
+		/**
+		 * Sets the raw, unencoded buffer.
+		 *
+		 * @param buffer The buffer to set.
+		 */
 		void buffer(const Buffer& buffer);
 
+		/**
+		 * @return The base64 string representing the data in this stream.
+		 */
 		std::string base64() const;
+		/**
+		 * Loads the specified base64 string into the stream.
+		 *
+		 * @param base64 The base64 string to load.
+		 */
 		void base64(const std::string& base64);
 	};
 };
