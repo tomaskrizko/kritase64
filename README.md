@@ -1,6 +1,6 @@
 # Kritase64
 
-A simple C++ Base64 ([RFC 4648](www.datatracker.ietf.org/doc/rfc4648)) converter. Includes a library and a command-line tool.
+A simple C++ Base64 ([RFC 4648](https://datatracker.ietf.org/doc/rfc4648)) converter. Includes a library and a command-line tool.
 
 # Building
 
@@ -8,205 +8,17 @@ Whilst the library doesn't need building (you just add it to your project, see [
 
 ## On UNIX-like systems
 
-Run `./configure`, and then `make`. If you also want the tool installed globally, also run `make install`.
+Run `./configure`, and then `make`. If you want the tool installed globally, also run `make install`.
 
 ## On Windows
 
-Windows isn't officially supported. However the steps above should work just fine via POSIX-like environments, like [MSYS2](www.msys2.org).
-
-s
-
-s
-
-s
-
-s
-
-s
-
-s
-
-s
-
-s
-
-s
-
-
-s
-
-s
-
-s
-
-s
-
-s
-
-
-ss
-
-s
-
-s
-
-s
-
-s
-
-s
-
-s
-
-s
-
-s
-
-
-s
-
-s
-
-s
-
-s
-
-s
-
-
-ss
-
-s
-
-s
-
-s
-
-s
-
-s
-
-s
-
-s
-
-s
-
-
-s
-
-s
-
-s
-
-s
-
-s
-
-
-ss
-
-s
-
-s
-
-s
-
-s
-
-s
-
-s
-
-s
-
-s
-
-
-s
-
-s
-
-s
-
-s
-
-s
-
-
-ss
-
-s
-
-s
-
-s
-
-s
-
-s
-
-s
-
-s
-
-s
-
-
-s
-
-s
-
-s
-
-s
-
-s
-
-
-ss
-
-s
-
-s
-
-s
-
-s
-
-s
-
-s
-
-s
-
-s
-
-
-s
-
-s
-
-s
-
-s
-
-s
-
-
-s
-
-s
-
-s
-
-
+Windows isn't officially supported. However the steps above should theortically work just fine via POSIX-like environments, like [MSYS2](https://www.msys2.org).
 
 # Usage <a id='usage'></a>
 
 You can use the library by just including `src/kritase64.hpp` and `src/kritase64.cpp` in your project. The library only depends on the C++ Standard Library.
 
-Aside of a library, the project also provides a simple command-line tool for converting files.
+To use the command-line tool, just run `kritase64`.
 
 ## Features
 
@@ -215,4 +27,4 @@ Aside of a library, the project also provides a simple command-line tool for con
 
 # License
 
-This project is licensed under the MIT License. See `LICENSE.txt` For details. You can download the source code [here](www.gitlab.com/kritomas/kritase64)
+This project is licensed under the MIT License. See `LICENSE.txt` For details. You can download the source code [here](https://gitlab.com/kritomas/kritase64)
