@@ -1,9 +1,8 @@
-#include <cstdint>
-#include <iostream>
-#include "kritase64.hpp"
-#include <memory.h>
 #include <fstream>
-#include <sstream>
+#include <iostream>
+#include <memory.h>
+
+#include "kritase64.hpp"
 
 void usage()
 {

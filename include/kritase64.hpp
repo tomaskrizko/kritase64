@@ -9,18 +9,14 @@
 #ifndef KRITASE64_HPP
 #define KRITASE64_HPP
 
-#include <cstdint>
-#include <ios>
-#include <sstream>
-#include <vector>
-#include <string>
-#include <stdint.h>
 #include <exception>
+#include <sstream>
 #include <stdexcept>
+#include <stdint.h>
 
 namespace kritase64
 {
-	enum Base64ErrorTypes { ERROR_UNKNOWN, ERROR_INVALID_BASE64_STRING, ERROR_INVALID_BASE64_CHARACTER, ERROR_VALUE_OUT_OF_RANGE };
+	enum Base64ErrorTypes { ERROR_SUCCESS = 0, ERROR_UNKNOWN = -1, ERROR_INVALID_BASE64_STRING = 1, ERROR_INVALID_BASE64_CHARACTER, ERROR_VALUE_OUT_OF_RANGE };
 
 	class Base64Exception : public std::runtime_error
 	{

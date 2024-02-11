@@ -1,84 +1,84 @@
 #include "kritase64.hpp"
-#include <cstdint>
-#include <cstdio>
-#include <sstream>
-#include <string>
+
 #include <unordered_map>
 #include <unordered_set>
 
-const std::string BASE64_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-const std::string BASE64_ALTERNATIVE_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
-const std::string BASE64_IGNORED = " \t\n\r"; // These characters will be ignored when decoding.
-
-const char PAD = '=';
-
-class AlphabetConverter
+namespace kritase64
 {
-private:
-	std::unordered_map<int, char> VALUE_TO_ALPHABET;
-	std::unordered_map<char, int> ALPHABET_TO_VALUE;
-	std::unordered_set<char> IGNORED;
+	const std::string BASE64_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+	const std::string BASE64_ALTERNATIVE_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+	const std::string BASE64_IGNORED = " \t\n\r\0"; // These characters will be ignored when decoding.
 
-public:
-	AlphabetConverter()
-	{
-		for (int index = 0; index < BASE64_ALPHABET.length(); ++index)
-		{
-			VALUE_TO_ALPHABET[index] = BASE64_ALPHABET[index];
-			ALPHABET_TO_VALUE[BASE64_ALPHABET[index]] = index;
-			ALPHABET_TO_VALUE[BASE64_ALTERNATIVE_ALPHABET[index]] = index;
-		}
+	const char PAD = '=';
 
-		for (char c : BASE64_IGNORED)
-		{
-			IGNORED.insert(c);
-		}
-	}
+	class AlphabetConverter
+	{
+	private:
+		std::unordered_map<int, char> VALUE_TO_ALPHABET;
+		std::unordered_map<char, int> ALPHABET_TO_VALUE;
+		std::unordered_set<char> IGNORED;
 
-	bool isInAlphabet(char character) const
-	{
-		return (ALPHABET_TO_VALUE.count(character) > 0);
-	}
-	bool isInRange(int value) const
-	{
-		return (VALUE_TO_ALPHABET.count(value) > 0);
-	}
-	bool isIgnored(char c) const
-	{
-		return (IGNORED.count(c) > 0);
-	}
-
-	int alphabetToValue(char character) const
-	{
-		if (!isInAlphabet(character))
+	public:
+		AlphabetConverter()
 		{
-			throw kritase64::Base64Exception(kritase64::ERROR_INVALID_BASE64_CHARACTER, "Invalid base64 character");
-		}
-		return ALPHABET_TO_VALUE.at(character);
-	}
-	char valueToAlphabet(int value) const
-	{
-		if (!isInRange(value))
-		{
-			throw kritase64::Base64Exception(kritase64::ERROR_VALUE_OUT_OF_RANGE, "Value out of range for base64");
-		}
-		return VALUE_TO_ALPHABET.at(value);
-	}
-	std::string stripIgnored(std::string base64) const
-	{
-		for (auto it = base64.begin(); it != base64.end();)
-		{
-			if (isIgnored(*it))
+			for (int index = 0; index < BASE64_ALPHABET.length(); ++index)
 			{
-				it = base64.erase(it);
-				continue;
+				VALUE_TO_ALPHABET[index] = BASE64_ALPHABET[index];
+				ALPHABET_TO_VALUE[BASE64_ALPHABET[index]] = index;
+				ALPHABET_TO_VALUE[BASE64_ALTERNATIVE_ALPHABET[index]] = index;
 			}
-			++it;
+
+			for (char c : BASE64_IGNORED)
+			{
+				IGNORED.insert(c);
+			}
 		}
-		return base64;
-	}
-};
-AlphabetConverter alphabetConverter;
+
+		bool isInAlphabet(char character) const
+		{
+			return (ALPHABET_TO_VALUE.count(character) > 0);
+		}
+		bool isInRange(int value) const
+		{
+			return (VALUE_TO_ALPHABET.count(value) > 0);
+		}
+		bool isIgnored(char c) const
+		{
+			return (IGNORED.count(c) > 0);
+		}
+
+		int alphabetToValue(char character) const
+		{
+			if (!isInAlphabet(character))
+			{
+				throw kritase64::Base64Exception(kritase64::ERROR_INVALID_BASE64_CHARACTER, "Invalid base64 character");
+			}
+			return ALPHABET_TO_VALUE.at(character);
+		}
+		char valueToAlphabet(int value) const
+		{
+			if (!isInRange(value))
+			{
+				throw kritase64::Base64Exception(kritase64::ERROR_VALUE_OUT_OF_RANGE, "Value out of range for base64");
+			}
+			return VALUE_TO_ALPHABET.at(value);
+		}
+		std::string stripIgnored(std::string base64) const
+		{
+			for (auto it = base64.begin(); it != base64.end();)
+			{
+				if (isIgnored(*it))
+				{
+					it = base64.erase(it);
+					continue;
+				}
+				++it;
+			}
+			return base64;
+		}
+	};
+	AlphabetConverter alphabetConverter;
+}
 
 kritase64::Base64Exception::Base64Exception(kritase64::Base64ErrorTypes type, std::string message) : std::runtime_error(message)
 {

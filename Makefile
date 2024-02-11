@@ -1,4 +1,4 @@
-COMPILER=clang++
+COMPILER=g++
 
 SRC=src/*.cpp
 INCLUDE=-Iinclude
