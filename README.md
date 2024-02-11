@@ -12,7 +12,7 @@ Run `./configure`, and then `make`. If you want the tool installed globally, als
 
 ## On Windows
 
-Windows isn't officially supported. However the steps above should theortically work just fine via POSIX-like environments, like [MSYS2](https://www.msys2.org).
+Windows isn't officially supported. However, the steps above should theortically work just fine on POSIX-like environments, like [MSYS2](https://www.msys2.org).
 
 # Usage <a id='usage'></a>
 
@@ -22,9 +22,9 @@ To use the command-line tool, just run `kritase64`.
 
 ## Features
 
-*	`encode()`, `decode()`: Functions for converting arbitrary buffers.
+*	`kritase64::encode()`, `kritase64::decode()`: Functions for converting arbitrary buffers.
 *	`kritase64::Stream` and its variants: Simple iostreams, so that a base64 string can be treated as a file within source code.
 
 # License
 
-This project is licensed under the MIT License. See `LICENSE.txt` For details. You can download the source code [here](https://gitlab.com/kritomas/kritase64)
+This project is licensed under the MIT License. See `LICENSE.txt` For details. You can download the source code [here](https://gitlab.com/kritomas/kritase64).
