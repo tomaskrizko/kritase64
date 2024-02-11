@@ -31,61 +31,81 @@ int main(int argc, char* argv[])
 	if (argc <= 1)
 	{
 		usage();
-		return 0;
+		return kritase64::ERROR_SUCCESS;
 	}
 
-	if (argv[1] == (std::string)"encode")
+	try
 	{
-		kritase64::Stream stream("", std::ios::out | std::ios::binary);
-		kritase64::Buffer data;
-		if (argc <= 2)
+		if (argv[1] == (std::string)"encode")
 		{
-			data = everythingFromIO<uint8_t>(std::cin);
+			kritase64::Stream stream("", std::ios::out | std::ios::binary);
+			kritase64::Buffer data;
+			if (argc <= 2)
+			{
+				data = everythingFromIO<uint8_t>(std::cin);
+			}
+			else
+			{
+				std::ifstream file(argv[2], std::ios::in | std::ios::binary);
+				data = everythingFromIO<uint8_t>(file);
+				file.close();
+			}
+			stream.write((char*)data.data(), data.size());
+			if (argc <= 3)
+			{
+				std::cout << stream.base64();
+			}
+			else
+			{
+				std::ofstream output(argv[3], std::ios::out | std::ios::trunc);
+				output << stream.base64();
+				output.close();
+			}
+		}
+		else if (argv[1] == (std::string)"decode")
+		{
+			std::string base64;
+			if (argc <= 2)
+			{
+				base64 = everythingFromIO<char>(std::cin);
+			}
+			else
+			{
+				base64 = argv[2];
+			}
+			kritase64::Buffer data = kritase64::decode(base64);
+			if (argc <= 3)
+			{
+				std::cout.write((char*)data.data(), data.size());
+			}
+			else
+			{
+				std::ofstream output(argv[3], std::ios::out | std::ios::binary | std::ios::trunc);
+				output.write((char*)data.data(), data.size());
+				output.close();
+			}
 		}
 		else
 		{
-			std::ifstream file(argv[2], std::ios::in | std::ios::binary);
-			data = everythingFromIO<uint8_t>(file);
-			file.close();
-		}
-		stream.write((char*)data.data(), data.size());
-		if (argc <= 3)
-		{
-			std::cout << stream.base64();
-		}
-		else
-		{
-			std::ofstream output(argv[3], std::ios::out | std::ios::trunc);
-			output << stream.base64();
-			output.close();
+			std::cout << "Unknown argument \"" << argv[1] << "\"\n";
+			usage();
+			return kritase64::ERROR_UNKNOWN;
 		}
 	}
-	else if (argv[1] == (std::string)"decode")
+	catch (const kritase64::Base64Exception& error)
 	{
-		std::string base64;
-		if (argc <= 2)
-		{
-			base64 = everythingFromIO<char>(std::cin);
-		}
-		else
-		{
-			base64 = argv[2];
-		}
-		kritase64::Buffer data = kritase64::decode(base64);
-		if (argc <= 3)
-		{
-			std::cout.write((char*)data.data(), data.size());
-		}
-		else
-		{
-			std::ofstream output(argv[3], std::ios::out | std::ios::binary | std::ios::trunc);
-			output.write((char*)data.data(), data.size());
-			output.close();
-		}
+		std::cout << "An error occured: " << error.what() << std::endl;
+		return error.type;
 	}
-	else
+	catch (const std::exception& error)
 	{
-		usage();
+		std::cout << "An unknown error occured: " << error.what() << std::endl;
+		return kritase64::ERROR_UNKNOWN;
 	}
-	return 0;
+	catch (...)
+	{
+		std::cout << "An unknown unspecified error occured." << std::endl;
+		return kritase64::ERROR_UNKNOWN;
+	}
+	return kritase64::ERROR_SUCCESS;
 }
