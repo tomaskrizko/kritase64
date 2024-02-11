@@ -1,3 +1,29 @@
+/*
+ *	MIT License
+ *
+ *	Copyright (c) 2024 kritomas
+ *
+ *	Permission is hereby granted, free of charge, to any person obtaining a copy
+ *	of this software and associated documentation files (the "Software"), to deal
+ *	in the Software without restriction, including without limitation the rights
+ *	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *	copies of the Software, and to permit persons to whom the Software is
+ *	furnished to do so, subject to the following conditions:
+ *
+ *	The above copyright notice and this permission notice shall be included in all
+ *	copies or substantial portions of the Software.
+ *
+ *	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ *	SOFTWARE.
+ *
+ *	Source code: www.gitlab.com/kritomas/kritase64
+ */
+
 #include <fstream>
 #include <iostream>
 #include <memory.h>
@@ -7,6 +33,7 @@
 void usage()
 {
 	std::cout << "Usage:\n";
+	std::cout << "kritase64 version\n";
 	std::cout << "kritase64 encode [FILE] [OUTPUT FILE]\n";
 	std::cout << "kritase64 decode [base64 string] [OUTPUT FILE]\n";
 	std::cout << "If no FILE or base64 string is provided, input is taken from standard input.\n";
@@ -36,7 +63,20 @@ int main(int argc, char* argv[])
 
 	try
 	{
-		if (argv[1] == (std::string)"encode")
+		if (argv[1] == (std::string)"version")
+		{
+			std::cout << "kritase64 v1.0\n";
+			std::cout << "Copyright (c) 2024 kritomas\n";
+			std::cout << "This project is licensed under the MIT License. See source code for details.\n";
+			std::cout <<	"THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR "
+							"IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, "
+							"FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE "
+							"AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER "
+							"LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, "
+							"OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE "
+							"SOFTWARE." << std::endl;
+		}
+		else if (argv[1] == (std::string)"encode")
 		{
 			kritase64::Stream stream("", std::ios::out | std::ios::binary);
 			kritase64::Buffer data;
