@@ -75,6 +75,9 @@ namespace kritase64
 	public:
 		Stream(const std::string& base64 = "", std::ios_base::openmode mode = std::ios::in | std::ios::out);
 		
+		Buffer buffer() const;
+		void buffer(const Buffer& buffer);
+
 		std::string base64() const;
 		void base64(const std::string& base64);
 	};
@@ -86,6 +89,9 @@ namespace kritase64
 	public:
 		Istream(const std::string& base64 = "", std::ios_base::openmode = std::ios::in);
 		
+		Buffer buffer() const;
+		void buffer(const Buffer& buffer);
+
 		std::string  base64() const;
 		void base64(const std::string& base64);
 	};
@@ -97,6 +103,9 @@ namespace kritase64
 	public:
 		Ostream(const std::string& base64 = "", std::ios_base::openmode = std::ios::out);
 		
+		Buffer buffer() const;
+		void buffer(const Buffer& buffer);
+
 		std::string base64() const;
 		void base64(const std::string& base64);
 	};
