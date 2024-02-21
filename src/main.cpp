@@ -65,7 +65,7 @@ int main(int argc, char* argv[])
 	{
 		if (argv[1] == (std::string)"version")
 		{
-			std::cout << "kritase64 v1.0\n";
+			std::cout << "kritase64 v1.0.2\n";
 			std::cout << "Copyright (c) 2024 kritomas\n";
 			std::cout << "This project is licensed under the MIT License. See source code for details.\n";
 			std::cout <<	"THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR "
