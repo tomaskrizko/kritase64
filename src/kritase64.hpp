@@ -90,6 +90,13 @@ namespace kritase64
 	 * @return The resulting buffer.
 	 */
 	Buffer decode(std::string string);
+	/**
+	 * Decodes a base64 string to a normal string.
+	 *
+	 * @param string the base64 string to decode.
+	 * @return The resulting nornmal string.
+	 */
+	std::string decodeToString(const std::string& string);
 
 	class Stream : public std::stringstream
 	{

@@ -275,6 +275,14 @@ kritase64::Buffer kritase64::decode(std::string string)
 
 	return result;
 }
+std::string kritase64::decodeToString(const std::string& string)
+{
+	Buffer buffer = decode(string);
+	std::string res;
+	res.resize(buffer.size());
+	memcpy(res.data(), buffer.data(), buffer.size());
+	return res;
+}
 
 std::string kritase64::Stream::str() const
 {
