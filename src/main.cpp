@@ -70,35 +70,40 @@ struct CodingInfo
 	std::string output;
 };
 
-CodingInfo parseArgs(int argc, char* argv[])
+CodingInfo parseArgs(int argc, char** argv)
 {
 	CodingInfo res;
 
 	for (int index = 2; index < argc; ++index)
 	{
 		std::string current = argv[index];
+		std::string name;
 		switch (current[0])
 		{
 			case '-':
-				if (current.size() < 2) throw CLIException("Not enough arguments.");
+				if (current.size() < 2) throw CLIException("Not enough arguments");
 				switch (current[1])
 				{
 					case 'i':
-						if (res.inputSpecifided) throw CLIException("Can't specify multiple inputs.");
+						if (res.inputSpecifided) throw CLIException("Can't specify multiple inputs");
+						name = current.substr(2);
+						if (name.size() <= 0) throw CLIException("Input cannot be empty");
 						res.inputSpecifided = true;
-						res.input = current.substr(2);
+						res.input = name;
 						break;
 					case 'o':
-						if (res.outputSpecified) throw CLIException("Can't specify multiple outputs.");
+						if (res.outputSpecified) throw CLIException("Can't specify multiple outputs");
+						name = current.substr(2);
+						if (name.size() <= 0) throw CLIException("Output cannot be empty");
 						res.outputSpecified = true;
-						res.output = current.substr(2);
+						res.output = name;
 						break;
 					default:
-						throw CLIException((std::string)"Unknown argument '" + current[1] + "'.");
+						throw CLIException((std::string)"Unknown argument '" + current[1] + "'");
 				}
 				break;
 			default:
-				throw CLIException("Unknown token.");
+				throw CLIException((std::string)"Unknown token '" + current[0] + "'");
 		}
 	}
 
@@ -132,49 +137,59 @@ int main(int argc, char* argv[])
 		{
 			kritase64::Stream stream("", std::ios::out | std::ios::binary);
 			kritase64::Buffer data;
-			if (argc <= 2)
+			CodingInfo info = parseArgs(argc, argv);
+
+			if (info.inputSpecifided)
 			{
-				data = everythingFromIO<uint8_t>(std::cin);
-			}
-			else
-			{
-				std::ifstream file(argv[2], std::ios::in | std::ios::binary);
+				std::ifstream file(info.input, std::ios::in | std::ios::binary);
+				if (!file.is_open()) throw CLIException("Couldn't open INPUT FILE");
 				data = everythingFromIO<uint8_t>(file);
 				file.close();
 			}
-			stream.write((char*)data.data(), data.size());
-			if (argc <= 3)
+			else
 			{
-				std::cout << stream.base64();
+				data = everythingFromIO<uint8_t>(std::cin);
+			}
+			stream.write((char*)data.data(), data.size());
+			if (info.outputSpecified)
+			{
+				std::ofstream output(info.output, std::ios::out | std::ios::trunc);
+				if (!output.is_open()) throw CLIException("Couldn't open OUTPUT FILE");
+				output << stream.base64();
+				output.close();
 			}
 			else
 			{
-				std::ofstream output(argv[3], std::ios::out | std::ios::trunc);
-				output << stream.base64();
-				output.close();
+				std::cout << stream.base64();
 			}
 		}
 		else if (argv[1] == (std::string)"decode")
 		{
 			std::string base64;
-			if (argc <= 2)
+			CodingInfo info = parseArgs(argc, argv);
+
+			if (info.inputSpecifided)
+			{
+				std::ifstream file(info.input, std::ios::in);
+				if (!file.is_open()) throw CLIException("Couldn't open INPUT FILE");
+				base64 = everythingFromIO<char>(file);
+				file.close();
+			}
+			else
 			{
 				base64 = everythingFromIO<char>(std::cin);
 			}
-			else
-			{
-				base64 = argv[2];
-			}
 			kritase64::Buffer data = kritase64::decode(base64);
-			if (argc <= 3)
+			if (info.outputSpecified)
 			{
-				std::cout.write((char*)data.data(), data.size());
-			}
-			else
-			{
-				std::ofstream output(argv[3], std::ios::out | std::ios::binary | std::ios::trunc);
+				std::ofstream output(info.output, std::ios::out | std::ios::binary | std::ios::trunc);
+				if (!output.is_open()) throw CLIException("Couldn't open OUTPUT FILE");
 				output.write((char*)data.data(), data.size());
 				output.close();
+			}
+			else
+			{
+				std::cout.write((char*)data.data(), data.size());
 			}
 		}
 		else
@@ -192,6 +207,7 @@ int main(int argc, char* argv[])
 	catch (const CLIException& error)
 	{
 		std::cout << "An error occured: " << error.what() << std::endl;
+		usage();
 		return kritase64::ERROR_UNKNOWN;
 	}
 	catch (const std::exception& error)
