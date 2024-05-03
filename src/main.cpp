@@ -53,6 +53,58 @@ std::basic_string<T> everythingFromIO(std::istream& stream)
 	return res;
 }
 
+class CLIException : public std::runtime_error
+{
+public:
+	CLIException(const std::string& message) : std::runtime_error(message)
+	{
+	}
+};
+
+struct CodingInfo
+{
+	bool inputSpecifided = false;
+	std::string input;
+
+	bool outputSpecified = false;
+	std::string output;
+};
+
+CodingInfo parseArgs(int argc, char* argv[])
+{
+	CodingInfo res;
+
+	for (int index = 2; index < argc; ++index)
+	{
+		std::string current = argv[index];
+		switch (current[0])
+		{
+			case '-':
+				if (current.size() < 2) throw CLIException("Not enough arguments.");
+				switch (current[1])
+				{
+					case 'i':
+						if (res.inputSpecifided) throw CLIException("Can't specify multiple inputs.");
+						res.inputSpecifided = true;
+						res.input = current.substr(2);
+						break;
+					case 'o':
+						if (res.outputSpecified) throw CLIException("Can't specify multiple outputs.");
+						res.outputSpecified = true;
+						res.output = current.substr(2);
+						break;
+					default:
+						throw CLIException((std::string)"Unknown argument '" + current[1] + "'.");
+				}
+				break;
+			default:
+				throw CLIException("Unknown token.");
+		}
+	}
+
+	return res;
+}
+
 int main(int argc, char* argv[])
 {
 	if (argc <= 1)
@@ -134,8 +186,13 @@ int main(int argc, char* argv[])
 	}
 	catch (const kritase64::Base64Exception& error)
 	{
-		std::cout << "An error occured: " << error.what() << std::endl;
+		std::cout << "An internal error occured: " << error.what() << std::endl;
 		return error.type;
+	}
+	catch (const CLIException& error)
+	{
+		std::cout << "An error occured: " << error.what() << std::endl;
+		return kritase64::ERROR_UNKNOWN;
 	}
 	catch (const std::exception& error)
 	{
