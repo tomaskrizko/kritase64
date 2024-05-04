@@ -104,10 +104,12 @@ namespace kritase64
 	class Stream : public std::stringstream
 	{
 	protected:
+		bool use_alternative = false;
+
 		std::string str() const; // Hiding base method
 		
 	public:
-		Stream(const std::string& base64 = "", std::ios_base::openmode mode = std::ios::in | std::ios::out);
+		Stream(const std::string& base64 = "", std::ios_base::openmode mode = std::ios::in | std::ios::out, bool use_alternative = false);
 		
 		/**
 		 * @return The raw, unencoded buffer.
@@ -134,10 +136,12 @@ namespace kritase64
 	class Istream : public std::istringstream
 	{
 	protected:
+		bool use_alternative = false;
+
 		std::string str() const; // Hiding base method
 
 	public:
-		Istream(const std::string& base64 = "", std::ios_base::openmode = std::ios::in);
+		Istream(const std::string& base64 = "", std::ios_base::openmode = std::ios::in, bool use_alternative = false);
 		
 		/**
 		 * @return The raw, unencoded buffer.
@@ -164,10 +168,12 @@ namespace kritase64
 	class Ostream : public std::ostringstream
 	{
 	protected:
+		bool use_alternative = false;
+
 		std::string str() const; // Hiding base method
 		
 	public:
-		Ostream(const std::string& base64 = "", std::ios_base::openmode = std::ios::out);
+		Ostream(const std::string& base64 = "", std::ios_base::openmode = std::ios::out, bool use_alternative = false);
 		
 		/**
 		 * @return The raw, unencoded buffer.

@@ -34,10 +34,11 @@ void usage()
 {
 	std::cout << "Usage:\n";
 	std::cout << "kritase64 version\n";
-	std::cout << "kritase64 encode -i[INPUT FILE] -o[OUTPUT FILE]\n";
+	std::cout << "kritase64 encode -i[INPUT FILE] -o[OUTPUT FILE] [-a]\n";
 	std::cout << "kritase64 decode -i[INPUT FILE] -o[OUTPUT FILE]\n";
-	std::cout << "Input is taken from INPUT FILE, or from standard input, if no INPUT FILE is provided.\n";
-	std::cout << "Output is to OUTPUT FILE, or to standard output, if no OUTPUT FILE is provided." << std::endl;
+	std::cout << "Input is taken from INPUT FILE, or from standard input, if no -i is provided.\n";
+	std::cout << "Output is to OUTPUT FILE, or to standard output, if no -o is provided.\n";
+	std::cout << "When encoding, if -a is specified, the input will be encoded to the alternative (\"URL and Filename safe\") base64 alphabet." << std::endl;
 }
 
 template <class T>
@@ -68,6 +69,8 @@ struct CodingInfo
 
 	bool outputSpecified = false;
 	std::string output;
+
+	bool useAlternative = false;
 };
 
 CodingInfo parseArgs(int argc, char** argv)
@@ -97,6 +100,9 @@ CodingInfo parseArgs(int argc, char** argv)
 						if (name.size() <= 0) throw CLIException("Output cannot be empty");
 						res.outputSpecified = true;
 						res.output = name;
+						break;
+					case 'a':
+						res.useAlternative = true;
 						break;
 					default:
 						throw CLIException((std::string)"Unknown argument '" + current[1] + "'");
@@ -135,9 +141,9 @@ int main(int argc, char* argv[])
 		}
 		else if (argv[1] == (std::string)"encode")
 		{
-			kritase64::Stream stream("", std::ios::out | std::ios::binary);
 			kritase64::Buffer data;
 			CodingInfo info = parseArgs(argc, argv);
+			kritase64::Stream stream("", std::ios::out | std::ios::binary, info.useAlternative);
 
 			if (info.inputSpecifided)
 			{

@@ -292,8 +292,9 @@ std::string kritase64::Stream::str() const
 	return std::stringstream::str();
 }
 
-kritase64::Stream::Stream(const std::string& base64, std::ios_base::openmode mode) : std::stringstream(mode)
+kritase64::Stream::Stream(const std::string& base64, std::ios_base::openmode mode, bool use_alternative) : std::stringstream(mode)
 {
+	this->use_alternative = use_alternative;
 	this->base64(base64);
 }
 
@@ -311,7 +312,7 @@ void kritase64::Stream::buffer(const Buffer& buffer)
 
 std::string kritase64::Stream::base64() const
 {
-	return encode(str());
+	return encode(str(), use_alternative);
 }
 void kritase64::Stream::base64(const std::string& base64)
 {
@@ -323,8 +324,9 @@ std::string kritase64::Istream::str() const
 	return std::istringstream::str();
 }
 
-kritase64::Istream::Istream(const std::string& base64, std::ios_base::openmode mode) : std::istringstream(mode)
+kritase64::Istream::Istream(const std::string& base64, std::ios_base::openmode mode, bool use_alternative) : std::istringstream(mode)
 {
+	this->use_alternative = use_alternative;
 	this->base64(base64);
 }
 
@@ -342,7 +344,7 @@ void kritase64::Istream::buffer(const Buffer& buffer)
 
 std::string kritase64::Istream::base64() const
 {
-	return encode(str());
+	return encode(str(), use_alternative);
 }
 void kritase64::Istream::base64(const std::string& base64)
 {
@@ -354,8 +356,9 @@ std::string kritase64::Ostream::str() const
 	return std::ostringstream::str();
 }
 
-kritase64::Ostream::Ostream(const std::string& base64, std::ios_base::openmode mode) : std::ostringstream(mode)
+kritase64::Ostream::Ostream(const std::string& base64, std::ios_base::openmode mode, bool use_alternative) : std::ostringstream(mode)
 {
+	this->use_alternative = use_alternative;
 	this->base64(base64);
 }
 
@@ -373,7 +376,7 @@ void kritase64::Ostream::buffer(const Buffer& buffer)
 
 std::string kritase64::Ostream::base64() const
 {
-	return encode(str());
+	return encode(str(), use_alternative);
 }
 void kritase64::Ostream::base64(const std::string& base64)
 {
