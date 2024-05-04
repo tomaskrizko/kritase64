@@ -65,23 +65,26 @@ namespace kritase64
 	 *
 	 * @param buffer Pointer to the beginning of the buffer.
 	 * @param size Size of the buffer.
+	 * @param use_alternative Whether to use the alternative ("URL and Filename safe") base64 alphabet or not.
 	 * @return The resulting base64 string.
 	 */
-	std::string encode(const uint8_t* buffer, size_t size);
+	std::string encode(const uint8_t* buffer, size_t size, bool use_alternative = false);
 	/**
 	 * Encodes a buffer as a base64 string.
 	 *
 	 * @param buffsr The buffer to encode.
+	 * @param use_alternative Whether to use the alternative ("URL and Filename safe") base64 alphabet or not.
 	 * @return The resulting base64 string.
 	 */
-	std::string encode(const Buffer& buffer);
+	std::string encode(const Buffer& buffer, bool use_alternative = false);
 	/**
 	 * Encodes a string as a base64 string.
 	 *
 	 * @param string The string to encode.
+	 * @param use_alternative Whether to use the alternative ("URL and Filename safe") base64 alphabet or not.
 	 * @return The resulting base64 string.
 	 */
-	std::string encode(const std::string& string);
+	std::string encode(const std::string& string, bool use_alternative = false);
 
 	/**
 	 * Decodes a base64 string to a buffer.

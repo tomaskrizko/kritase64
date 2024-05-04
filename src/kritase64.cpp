@@ -40,7 +40,7 @@ namespace kritase64
 	class AlphabetConverter
 	{
 	private:
-		std::unordered_map<int, char> VALUE_TO_ALPHABET;
+		std::unordered_map<int, char> VALUE_TO_ALPHABET, ALTERNATIVE_VALUE_TO_APLHABET;
 		std::unordered_map<char, int> ALPHABET_TO_VALUE;
 		std::unordered_set<char> IGNORED;
 
@@ -50,6 +50,7 @@ namespace kritase64
 			for (int index = 0; index < BASE64_ALPHABET.length(); ++index)
 			{
 				VALUE_TO_ALPHABET[index] = BASE64_ALPHABET[index];
+				ALTERNATIVE_VALUE_TO_APLHABET[index] = BASE64_ALTERNATIVE_ALPHABET[index];
 				ALPHABET_TO_VALUE[BASE64_ALPHABET[index]] = index;
 				ALPHABET_TO_VALUE[BASE64_ALTERNATIVE_ALPHABET[index]] = index;
 			}
@@ -64,8 +65,9 @@ namespace kritase64
 		{
 			return (ALPHABET_TO_VALUE.count(character) > 0);
 		}
-		bool isInRange(int value) const
+		bool isInRange(int value, bool alternative = false) const
 		{
+			if (alternative) return (ALTERNATIVE_VALUE_TO_APLHABET.count(value) > 0);
 			return (VALUE_TO_ALPHABET.count(value) > 0);
 		}
 		bool isIgnored(char c) const
@@ -81,12 +83,13 @@ namespace kritase64
 			}
 			return ALPHABET_TO_VALUE.at(character);
 		}
-		char valueToAlphabet(int value) const
+		char valueToAlphabet(int value, bool alternative = false) const
 		{
-			if (!isInRange(value))
+			if (!isInRange(value, alternative))
 			{
 				throw kritase64::Base64Exception(kritase64::ERROR_VALUE_OUT_OF_RANGE, "Value out of range for base64");
 			}
+			if (alternative) return ALTERNATIVE_VALUE_TO_APLHABET.at(value);
 			return VALUE_TO_ALPHABET.at(value);
 		}
 		std::string stripIgnored(std::string base64) const
@@ -142,7 +145,7 @@ bool kritase64::check(const std::string& string)
 	return true;
 }
 
-std::string kritase64::encode(const uint8_t* buffer, size_t size)
+std::string kritase64::encode(const uint8_t* buffer, size_t size, bool use_alternative)
 {
 	std::string result = "";
 
@@ -153,19 +156,19 @@ std::string kritase64::encode(const uint8_t* buffer, size_t size)
 
 		int charValue = 0; // hextet 1
 		charValue = (buffer[startIndex] & (128 | 64 | 32 | 16 | 8 | 4)) >> 2;
-		result += alphabetConverter.valueToAlphabet(charValue);
+		result += alphabetConverter.valueToAlphabet(charValue, use_alternative);
 
 		charValue = 0; // hextet 2
 		charValue = ((buffer[startIndex] & (2 | 1)) << 4) | ((buffer[startIndex + 1] & (128 | 64 | 32 | 16)) >> 4);
-		result += alphabetConverter.valueToAlphabet(charValue);
+		result += alphabetConverter.valueToAlphabet(charValue, use_alternative);
 
 		charValue = 0; // hextet 3
 		charValue = ((buffer[startIndex + 1] & (8 | 4 | 2 | 1)) << 2) | ((buffer[startIndex + 2] & (128 | 64)) >> 6);
-		result += alphabetConverter.valueToAlphabet(charValue);
+		result += alphabetConverter.valueToAlphabet(charValue, use_alternative);
 
 		charValue = 0; // hextet 4
 		charValue = ((buffer[startIndex + 2] & (32 | 16 | 8 | 4 | 2 | 1)));
-		result += alphabetConverter.valueToAlphabet(charValue);
+		result += alphabetConverter.valueToAlphabet(charValue, use_alternative);
 	}
 
 	int remainder = size % 3;
@@ -175,14 +178,14 @@ std::string kritase64::encode(const uint8_t* buffer, size_t size)
 
 		int charValue = 0; // hextet 1
 		charValue = (buffer[startIndex] & (128 | 64 | 32 | 16 | 8 | 4)) >> 2;
-		result += alphabetConverter.valueToAlphabet(charValue);
+		result += alphabetConverter.valueToAlphabet(charValue, use_alternative);
 
 		if (remainder >= 1)
 		{
 			charValue = 0; // hextet 2
 			charValue = (buffer[startIndex] & (2 | 1)) << 4;
 			if (remainder >= 2) charValue |= ((buffer[startIndex + 1] & (128 | 64 | 32 | 16)) >> 4);
-			result += alphabetConverter.valueToAlphabet(charValue);
+			result += alphabetConverter.valueToAlphabet(charValue, use_alternative);
 		}
 
 		if (remainder >= 2)
@@ -193,7 +196,7 @@ std::string kritase64::encode(const uint8_t* buffer, size_t size)
 
 			charValue = 0; // hextet 3
 			charValue = (buffer[startIndex + 1] & (8 | 4 | 2 | 1)) << 2;
-			result += alphabetConverter.valueToAlphabet(charValue);
+			result += alphabetConverter.valueToAlphabet(charValue, use_alternative);
 		}
 
 		for (int p = 0; p <(3 - remainder); ++p)
@@ -204,13 +207,13 @@ std::string kritase64::encode(const uint8_t* buffer, size_t size)
 
 	return result;
 }
-std::string kritase64::encode(const Buffer& buffer)
+std::string kritase64::encode(const Buffer& buffer, bool use_alternative)
 {
-	return encode(buffer.data(), buffer.size());
+	return encode(buffer.data(), buffer.size(), use_alternative);
 }
-std::string kritase64::encode(const std::string& string)
+std::string kritase64::encode(const std::string& string, bool use_alternative)
 {
-	return encode((uint8_t*)string.data(), string.size());
+	return encode((uint8_t*)string.data(), string.size(), use_alternative);
 }
 
 kritase64::Buffer kritase64::decode(std::string string)
