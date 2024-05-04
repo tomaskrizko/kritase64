@@ -3,6 +3,7 @@ compile_commands.json
 .cache
 *.cache
 src/*.o
+configure~
 Makefile
 config.*
 src/.deps
