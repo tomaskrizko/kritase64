@@ -90,26 +90,43 @@ namespace kritase64
 	 * Decodes a base64 string to a buffer.
 	 *
 	 * @param string The base64 string to decode.
+	 * @param ignore_all Whether to ignore all illegal characters or not.
 	 * @return The resulting buffer.
 	 */
-	Buffer decode(std::string string);
+	Buffer decode(std::string string, bool ignore_all = false);
 	/**
 	 * Decodes a base64 string to a normal string.
 	 *
-	 * @param string the base64 string to decode.
+	 * @param string The base64 string to decode.
+	 * @param ignore_all Whether to ignore all illegal characters or not.
 	 * @return The resulting nornmal string.
 	 */
-	std::string decodeToString(const std::string& string);
+	std::string decodeToString(const std::string& string, bool ignore_all = false);
+
+	typedef int Base64Mode;
+	enum Base64Modes
+	{
+		/// Whether to use the alternative ("URL and Filename safe") base64 alphabet or not.
+		MODE_USEALTERNATIVE = 1 << 0,
+		/// Whether to ignore all illegal characters or just a select few whitespace characters.
+		MODE_IGNOREALL = 1 << 1
+	};
 
 	class Stream : public std::stringstream
 	{
 	protected:
 		bool use_alternative = false;
+		Base64Mode mode = 0;
 
 		std::string str() const; // Hiding base method
 		
 	public:
-		Stream(const std::string& base64 = "", std::ios_base::openmode mode = std::ios::in | std::ios::out, bool use_alternative = false);
+		/**
+		 * @param base64 The default base64 string to open.
+		 * @param openmode The std::ios::openmode to use by the underlying iostream.
+		 * @param base64mode The modes to use for encoding/decoding. Any of Base64Modes, or'd together.
+		 */
+		Stream(const std::string& base64 = "", std::ios_base::openmode openmode = std::ios::in | std::ios::out, Base64Mode base64mode = 0);
 		
 		/**
 		 * @return The raw, unencoded buffer.
@@ -136,13 +153,18 @@ namespace kritase64
 	class Istream : public std::istringstream
 	{
 	protected:
-		bool use_alternative = false;
+		Base64Mode mode = 0;
 
 		std::string str() const; // Hiding base method
 
 	public:
-		Istream(const std::string& base64 = "", std::ios_base::openmode = std::ios::in, bool use_alternative = false);
-		
+		/**
+		 * @param base64 The default base64 string to open.
+		 * @param openmode The std::ios::openmode to use by the underlying iostream.
+		 * @param base64mode The modes to use for encoding/decoding. Any of Base64Modes, or'd together.
+		 */
+		Istream(const std::string& base64 = "", std::ios_base::openmode openmode = std::ios::in, Base64Mode base64mode = 0);
+
 		/**
 		 * @return The raw, unencoded buffer.
 		 */
@@ -168,12 +190,17 @@ namespace kritase64
 	class Ostream : public std::ostringstream
 	{
 	protected:
-		bool use_alternative = false;
+		Base64Mode mode = 0;
 
 		std::string str() const; // Hiding base method
 		
 	public:
-		Ostream(const std::string& base64 = "", std::ios_base::openmode = std::ios::out, bool use_alternative = false);
+		/**
+		 * @param base64 The default base64 string to open.
+		 * @param openmode The std::ios::openmode to use by the underlying iostream.
+		 * @param base64mode The modes to use for encoding/decoding. Any of Base64Modes, or'd together.
+		 */
+		Ostream(const std::string& base64 = "", std::ios_base::openmode openmode = std::ios::out, Base64Mode base64mode = 0);
 		
 		/**
 		 * @return The raw, unencoded buffer.

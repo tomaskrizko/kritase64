@@ -67,12 +67,22 @@ namespace kritase64
 		}
 		bool isInRange(int value, bool alternative = false) const
 		{
-			if (alternative) return (ALTERNATIVE_VALUE_TO_APLHABET.count(value) > 0);
+			if (alternative)
+			{
+				return (ALTERNATIVE_VALUE_TO_APLHABET.count(value) > 0);
+			}
 			return (VALUE_TO_ALPHABET.count(value) > 0);
 		}
-		bool isIgnored(char c) const
+		bool isIgnored(char c, bool ignore_all = false) const
 		{
-			return (IGNORED.count(c) > 0);
+			if (ignore_all)
+			{
+				return !isInAlphabet(c);
+			}
+			else
+			{
+				return (IGNORED.count(c) > 0);
+			}
 		}
 
 		int alphabetToValue(char character) const
@@ -89,14 +99,17 @@ namespace kritase64
 			{
 				throw kritase64::Base64Exception(kritase64::ERROR_VALUE_OUT_OF_RANGE, "Value out of range for base64");
 			}
-			if (alternative) return ALTERNATIVE_VALUE_TO_APLHABET.at(value);
+			if (alternative)
+			{
+				return ALTERNATIVE_VALUE_TO_APLHABET.at(value);
+			}
 			return VALUE_TO_ALPHABET.at(value);
 		}
-		std::string stripIgnored(std::string base64) const
+		std::string stripIgnored(std::string base64, bool ignoreIllegal = false) const
 		{
 			for (auto it = base64.begin(); it != base64.end();)
 			{
-				if (isIgnored(*it))
+				if (isIgnored(*it, ignoreIllegal))
 				{
 					it = base64.erase(it);
 					continue;
@@ -216,7 +229,7 @@ std::string kritase64::encode(const std::string& string, bool use_alternative)
 	return encode((uint8_t*)string.data(), string.size(), use_alternative);
 }
 
-kritase64::Buffer kritase64::decode(std::string string)
+kritase64::Buffer kritase64::decode(std::string string, bool is_ignored)
 {
 	string = alphabetConverter.stripIgnored(string);
 	if (!check(string))
@@ -278,9 +291,9 @@ kritase64::Buffer kritase64::decode(std::string string)
 
 	return result;
 }
-std::string kritase64::decodeToString(const std::string& string)
+std::string kritase64::decodeToString(const std::string& string, bool is_ignored)
 {
-	Buffer buffer = decode(string);
+	Buffer buffer = decode(string, is_ignored);
 	std::string res;
 	res.resize(buffer.size());
 	memcpy(res.data(), buffer.data(), buffer.size());
@@ -292,9 +305,9 @@ std::string kritase64::Stream::str() const
 	return std::stringstream::str();
 }
 
-kritase64::Stream::Stream(const std::string& base64, std::ios_base::openmode mode, bool use_alternative) : std::stringstream(mode)
+kritase64::Stream::Stream(const std::string& base64, std::ios_base::openmode openmode, Base64Mode base64mode) : std::stringstream(openmode)
 {
-	this->use_alternative = use_alternative;
+	this->mode = base64mode;
 	this->base64(base64);
 }
 
@@ -312,11 +325,11 @@ void kritase64::Stream::buffer(const Buffer& buffer)
 
 std::string kritase64::Stream::base64() const
 {
-	return encode(str(), use_alternative);
+	return encode(str(), mode & MODE_USEALTERNATIVE);
 }
 void kritase64::Stream::base64(const std::string& base64)
 {
-	buffer(decode(base64));
+	buffer(decode(base64, mode & MODE_IGNOREALL));
 }
 
 std::string kritase64::Istream::str() const
@@ -324,9 +337,9 @@ std::string kritase64::Istream::str() const
 	return std::istringstream::str();
 }
 
-kritase64::Istream::Istream(const std::string& base64, std::ios_base::openmode mode, bool use_alternative) : std::istringstream(mode)
+kritase64::Istream::Istream(const std::string& base64, std::ios_base::openmode openmode, Base64Mode base64mode) : std::istringstream(openmode)
 {
-	this->use_alternative = use_alternative;
+	this->mode = base64mode;
 	this->base64(base64);
 }
 
@@ -344,11 +357,11 @@ void kritase64::Istream::buffer(const Buffer& buffer)
 
 std::string kritase64::Istream::base64() const
 {
-	return encode(str(), use_alternative);
+	return encode(str(), mode & MODE_USEALTERNATIVE);
 }
 void kritase64::Istream::base64(const std::string& base64)
 {
-	buffer(decode(base64));
+	buffer(decode(base64, mode & MODE_IGNOREALL));
 }
 
 std::string kritase64::Ostream::str() const
@@ -356,9 +369,9 @@ std::string kritase64::Ostream::str() const
 	return std::ostringstream::str();
 }
 
-kritase64::Ostream::Ostream(const std::string& base64, std::ios_base::openmode mode, bool use_alternative) : std::ostringstream(mode)
+kritase64::Ostream::Ostream(const std::string& base64, std::ios_base::openmode openmode, Base64Mode base64mode) : std::ostringstream(openmode)
 {
-	this->use_alternative = use_alternative;
+	this->mode = base64mode;
 	this->base64(base64);
 }
 
@@ -376,9 +389,9 @@ void kritase64::Ostream::buffer(const Buffer& buffer)
 
 std::string kritase64::Ostream::base64() const
 {
-	return encode(str(), use_alternative);
+	return encode(str(), mode & MODE_USEALTERNATIVE);
 }
 void kritase64::Ostream::base64(const std::string& base64)
 {
-	buffer(decode(base64));
+	buffer(decode(base64, mode & MODE_IGNOREALL));
 }
