@@ -231,7 +231,7 @@ std::string kritase64::encode(const std::string& string, bool use_alternative)
 
 kritase64::Buffer kritase64::decode(std::string string, bool is_ignored)
 {
-	string = alphabetConverter.stripIgnored(string);
+	string = alphabetConverter.stripIgnored(string, is_ignored);
 	if (!check(string))
 	{
 		throw Base64Exception(ERROR_INVALID_BASE64_STRING, "Decoding invalid base64 string");
