@@ -77,6 +77,10 @@ namespace kritase64
 		{
 			if (ignore_all)
 			{
+				if (c == PAD)
+				{
+					return false;
+				}
 				return !isInAlphabet(c);
 			}
 			else
