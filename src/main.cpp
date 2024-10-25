@@ -85,22 +85,53 @@ CodingInfo parseArgs(int argc, char** argv)
 		switch (current[0])
 		{
 			case '-':
-				if (current.size() < 2) throw CLIException("Not enough arguments");
+				if (current.size() < 2)
+				{
+					throw CLIException("Not enough arguments");
+				}
 				switch (current[1])
 				{
 					case 'i':
-						if (res.inputSpecifided) throw CLIException("Can't specify multiple inputs");
-						name = current.substr(2);
-						if (name.size() <= 0) throw CLIException("Input cannot be empty");
+						if (res.inputSpecifided)
+						{
+							throw CLIException("Can't specify multiple inputs");
+						}
 						res.inputSpecifided = true;
-						res.input = name;
+						name = current.substr(2);
+						if (name.size() <= 0)
+						{
+							++index;
+							if (index >= argc)
+							{
+								throw CLIException("Input cannot be empty");
+							}
+							res.input = argv[index];
+						}
+						else
+						{
+							res.input = name;
+						}
 						break;
 					case 'o':
-						if (res.outputSpecified) throw CLIException("Can't specify multiple outputs");
-						name = current.substr(2);
-						if (name.size() <= 0) throw CLIException("Output cannot be empty");
+						if (res.outputSpecified)
+						{
+							throw CLIException("Can't specify multiple outputs");
+						}
 						res.outputSpecified = true;
-						res.output = name;
+						name = current.substr(2);
+						if (name.size() <= 0)
+						{
+							++index;
+							if (index >= argc)
+							{
+								throw CLIException("Output cannot be empty");
+							}
+							res.output = argv[index];
+						}
+						else
+						{
+							res.output = name;
+						}
 						break;
 					case 'a':
 						res.mode |= kritase64::MODE_USEALTERNATIVE;
