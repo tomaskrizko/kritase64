@@ -34,8 +34,8 @@ void usage()
 {
 	std::cout << "Usage:\n";
 	std::cout << "kritase64 version\n";
-	std::cout << "kritase64 encode -i[INPUT FILE] -o[OUTPUT FILE] [-a]\n";
-	std::cout << "kritase64 decode -i[INPUT FILE] -o[OUTPUT FILE] [-g]\n";
+	std::cout << "kritase64 encode -i [INPUT FILE] -o [OUTPUT FILE] [-a]\n";
+	std::cout << "kritase64 decode -i [INPUT FILE] -o [OUTPUT FILE] [-g]\n";
 	std::cout << "Input is taken from INPUT FILE, or from standard input, if no -i is provided.\n";
 	std::cout << "Output is to OUTPUT FILE, or to standard output, if no -o is provided.\n";
 	std::cout << "When encoding, if -a is specified, the input will be encoded to the alternative (\"URL and Filename safe\") base64 alphabet.\n";
