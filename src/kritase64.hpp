@@ -21,7 +21,7 @@
  *	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  *	SOFTWARE.
  *
- *	Source code: www.gitlab.com/kritomas/kritase64
+ *	Source code: https://gitlab.com/kritomas/kritase64
  *
  *	This project implements the base64 encoding (RFC 4648).
  *	The base64 alphabet is as follows:
@@ -115,19 +115,18 @@ namespace kritase64
 	class Stream : public std::stringstream
 	{
 	protected:
-		bool use_alternative = false;
 		Base64Mode mode = 0;
 
 		std::string str() const; // Hiding base method
-		
+
 	public:
 		/**
 		 * @param base64 The default base64 string to open.
 		 * @param openmode The std::ios::openmode to use by the underlying iostream.
 		 * @param base64mode The modes to use for encoding/decoding. Any of Base64Modes, or'd together.
 		 */
-		Stream(const std::string& base64 = "", std::ios_base::openmode openmode = std::ios::in | std::ios::out, Base64Mode base64mode = 0);
-		
+		Stream(const std::string& base64 = "", std::ios_base::openmode openmode = std::ios::in | std::ios::out, Base64Mode mode = 0);
+
 		/**
 		 * @return The raw, unencoded buffer.
 		 */
@@ -163,7 +162,7 @@ namespace kritase64
 		 * @param openmode The std::ios::openmode to use by the underlying iostream.
 		 * @param base64mode The modes to use for encoding/decoding. Any of Base64Modes, or'd together.
 		 */
-		Istream(const std::string& base64 = "", std::ios_base::openmode openmode = std::ios::in, Base64Mode base64mode = 0);
+		Istream(const std::string& base64 = "", std::ios_base::openmode openmode = std::ios::in, Base64Mode mode = 0);
 
 		/**
 		 * @return The raw, unencoded buffer.
@@ -193,15 +192,15 @@ namespace kritase64
 		Base64Mode mode = 0;
 
 		std::string str() const; // Hiding base method
-		
+
 	public:
 		/**
 		 * @param base64 The default base64 string to open.
 		 * @param openmode The std::ios::openmode to use by the underlying iostream.
 		 * @param base64mode The modes to use for encoding/decoding. Any of Base64Modes, or'd together.
 		 */
-		Ostream(const std::string& base64 = "", std::ios_base::openmode openmode = std::ios::out, Base64Mode base64mode = 0);
-		
+		Ostream(const std::string& base64 = "", std::ios_base::openmode openmode = std::ios::out, Base64Mode mode = 0);
+
 		/**
 		 * @return The raw, unencoded buffer.
 		 */

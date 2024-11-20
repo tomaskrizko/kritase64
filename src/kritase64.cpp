@@ -21,7 +21,7 @@
  *	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  *	SOFTWARE.
  *
- *	Source code: www.gitlab.com/kritomas/kritase64
+ *	Source code: https://gitlab.com/kritomas/kritase64
  */
 
 #include "kritase64.hpp"
@@ -309,9 +309,9 @@ std::string kritase64::Stream::str() const
 	return std::stringstream::str();
 }
 
-kritase64::Stream::Stream(const std::string& base64, std::ios_base::openmode openmode, Base64Mode base64mode) : std::stringstream(openmode)
+kritase64::Stream::Stream(const std::string& base64, std::ios_base::openmode openmode, Base64Mode mode) : std::stringstream(openmode)
 {
-	this->mode = base64mode;
+	this->mode = mode;
 	this->base64(base64);
 }
 
@@ -341,9 +341,9 @@ std::string kritase64::Istream::str() const
 	return std::istringstream::str();
 }
 
-kritase64::Istream::Istream(const std::string& base64, std::ios_base::openmode openmode, Base64Mode base64mode) : std::istringstream(openmode)
+kritase64::Istream::Istream(const std::string& base64, std::ios_base::openmode openmode, Base64Mode mode) : std::istringstream(openmode)
 {
-	this->mode = base64mode;
+	this->mode = mode;
 	this->base64(base64);
 }
 
@@ -373,9 +373,9 @@ std::string kritase64::Ostream::str() const
 	return std::ostringstream::str();
 }
 
-kritase64::Ostream::Ostream(const std::string& base64, std::ios_base::openmode openmode, Base64Mode base64mode) : std::ostringstream(openmode)
+kritase64::Ostream::Ostream(const std::string& base64, std::ios_base::openmode openmode, Base64Mode mode) : std::ostringstream(openmode)
 {
-	this->mode = base64mode;
+	this->mode = mode;
 	this->base64(base64);
 }
 
