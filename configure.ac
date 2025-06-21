@@ -1,4 +1,4 @@
-AC_INIT([kritase64], [1.2], [kritomas])
+AC_INIT([kritase64], [1.2.1], [kritomas])
 AM_INIT_AUTOMAKE
 AC_PROG_CXX
 AC_CONFIG_FILES([Makefile])
