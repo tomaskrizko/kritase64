@@ -43,40 +43,40 @@ void usage()
 }
 
 template <class T>
-std::basic_string<T> everythingFromIO(std::istream& stream)
+std::basic_string<T> everything_from_IO(std::istream& stream)
 {
-	std::basic_string<T> res;
+	std::basic_string<T> result;
 	while (!stream.eof())
 	{
 		T byte;
 		stream.read((char*)&byte, 1);
-		if (!stream.eof()) res.push_back(byte);
+		if (!stream.eof()) result.push_back(byte);
 	}
-	return res;
+	return result;
 }
 
-class CLIException : public std::runtime_error
+class CLI_Exception : public std::runtime_error
 {
 public:
-	CLIException(const std::string& message) : std::runtime_error(message)
+	CLI_Exception(const std::string& message) : std::runtime_error(message)
 	{
 	}
 };
 
-struct CodingInfo
+struct Coding_Info
 {
-	bool inputSpecifided = false;
+	bool input_specifided = false;
 	std::string input;
 
-	bool outputSpecified = false;
+	bool output_specified = false;
 	std::string output;
 
-	kritase64::Base64Mode mode = 0;
+	kritase64::Base64_Mode mode = 0;
 };
 
-CodingInfo parseArgs(int argc, char** argv)
+Coding_Info parse_args(int argc, char** argv)
 {
-	CodingInfo res;
+	Coding_Info result;
 
 	for (int index = 2; index < argc; ++index)
 	{
@@ -87,68 +87,68 @@ CodingInfo parseArgs(int argc, char** argv)
 			case '-':
 				if (current.size() < 2)
 				{
-					throw CLIException("Not enough arguments");
+					throw CLI_Exception("Not enough arguments");
 				}
 				switch (current[1])
 				{
 					case 'i':
-						if (res.inputSpecifided)
+						if (result.input_specifided)
 						{
-							throw CLIException("Can't specify multiple inputs");
+							throw CLI_Exception("Can't specify multiple inputs");
 						}
-						res.inputSpecifided = true;
+						result.input_specifided = true;
 						name = current.substr(2);
 						if (name.size() <= 0)
 						{
 							++index;
 							if (index >= argc)
 							{
-								throw CLIException("Input cannot be empty");
+								throw CLI_Exception("Input cannot be empty");
 							}
-							res.input = argv[index];
+							result.input = argv[index];
 						}
 						else
 						{
-							res.input = name;
+							result.input = name;
 						}
 						break;
 					case 'o':
-						if (res.outputSpecified)
+						if (result.output_specified)
 						{
-							throw CLIException("Can't specify multiple outputs");
+							throw CLI_Exception("Can't specify multiple outputs");
 						}
-						res.outputSpecified = true;
+						result.output_specified = true;
 						name = current.substr(2);
 						if (name.size() <= 0)
 						{
 							++index;
 							if (index >= argc)
 							{
-								throw CLIException("Output cannot be empty");
+								throw CLI_Exception("Output cannot be empty");
 							}
-							res.output = argv[index];
+							result.output = argv[index];
 						}
 						else
 						{
-							res.output = name;
+							result.output = name;
 						}
 						break;
 					case 'a':
-						res.mode |= kritase64::MODE_USEALTERNATIVE;
+						result.mode |= kritase64::MODE_USEALTERNATIVE;
 						break;
 					case 'g':
-						res.mode |= kritase64::MODE_IGNOREALL;
+						result.mode |= kritase64::MODE_IGNOREALL;
 						break;
 					default:
-						throw CLIException((std::string)"Unknown argument '" + current[1] + "'");
+						throw CLI_Exception((std::string)"Unknown argument '" + current[1] + "'");
 				}
 				break;
 			default:
-				throw CLIException((std::string)"Unknown token '" + current[0] + "'");
+				throw CLI_Exception((std::string)"Unknown token '" + current[0] + "'");
 		}
 	}
 
-	return res;
+	return result;
 }
 
 int main(int argc, char* argv[])
@@ -177,25 +177,25 @@ int main(int argc, char* argv[])
 		else if (argv[1] == (std::string)"encode")
 		{
 			kritase64::Buffer data;
-			CodingInfo info = parseArgs(argc, argv);
+			Coding_Info info = parse_args(argc, argv);
 			kritase64::Stream stream("", std::ios::out | std::ios::binary, info.mode);
 
-			if (info.inputSpecifided)
+			if (info.input_specifided)
 			{
 				std::ifstream file(info.input, std::ios::in | std::ios::binary);
-				if (!file.is_open()) throw CLIException("Couldn't open INPUT FILE");
-				data = everythingFromIO<uint8_t>(file);
+				if (!file.is_open()) throw CLI_Exception("Couldn't open INPUT FILE");
+				data = everything_from_IO<uint8_t>(file);
 				file.close();
 			}
 			else
 			{
-				data = everythingFromIO<uint8_t>(std::cin);
+				data = everything_from_IO<uint8_t>(std::cin);
 			}
 			stream.write((char*)data.data(), data.size());
-			if (info.outputSpecified)
+			if (info.output_specified)
 			{
 				std::ofstream output(info.output, std::ios::out | std::ios::trunc);
-				if (!output.is_open()) throw CLIException("Couldn't open OUTPUT FILE");
+				if (!output.is_open()) throw CLI_Exception("Couldn't open OUTPUT FILE");
 				output << stream.base64();
 				output.close();
 			}
@@ -207,24 +207,24 @@ int main(int argc, char* argv[])
 		else if (argv[1] == (std::string)"decode")
 		{
 			std::string base64;
-			CodingInfo info = parseArgs(argc, argv);
+			Coding_Info info = parse_args(argc, argv);
 
-			if (info.inputSpecifided)
+			if (info.input_specifided)
 			{
 				std::ifstream file(info.input, std::ios::in);
-				if (!file.is_open()) throw CLIException("Couldn't open INPUT FILE");
-				base64 = everythingFromIO<char>(file);
+				if (!file.is_open()) throw CLI_Exception("Couldn't open INPUT FILE");
+				base64 = everything_from_IO<char>(file);
 				file.close();
 			}
 			else
 			{
-				base64 = everythingFromIO<char>(std::cin);
+				base64 = everything_from_IO<char>(std::cin);
 			}
 			kritase64::Buffer data = kritase64::decode(base64, info.mode);
-			if (info.outputSpecified)
+			if (info.output_specified)
 			{
 				std::ofstream output(info.output, std::ios::out | std::ios::binary | std::ios::trunc);
-				if (!output.is_open()) throw CLIException("Couldn't open OUTPUT FILE");
+				if (!output.is_open()) throw CLI_Exception("Couldn't open OUTPUT FILE");
 				output.write((char*)data.data(), data.size());
 				output.close();
 			}
@@ -240,12 +240,12 @@ int main(int argc, char* argv[])
 			return kritase64::ERROR_UNKNOWN;
 		}
 	}
-	catch (const kritase64::Base64Exception& error)
+	catch (const kritase64::Base64_Exception& error)
 	{
 		std::cout << "An internal error occured: " << error.what() << std::endl;
 		return error.type;
 	}
-	catch (const CLIException& error)
+	catch (const CLI_Exception& error)
 	{
 		std::cout << "An error occured: " << error.what() << std::endl;
 		usage();

@@ -8,3 +8,5 @@ Makefile
 config.*
 src/.deps
 src/.dirstamp
+test
+.vscode

@@ -37,7 +37,7 @@ namespace kritase64
 
 	const char PAD = '=';
 
-	class AlphabetConverter
+	class Alphabet_Converter
 	{
 	private:
 		std::unordered_map<int, char> VALUE_TO_ALPHABET, ALTERNATIVE_VALUE_TO_APLHABET;
@@ -45,7 +45,7 @@ namespace kritase64
 		std::unordered_set<char> IGNORED;
 
 	public:
-		AlphabetConverter()
+		Alphabet_Converter()
 		{
 			for (int index = 0; index < sizeof(BASE64_ALPHABET) - 1; ++index)
 			{
@@ -61,11 +61,11 @@ namespace kritase64
 			}
 		}
 
-		bool isInAlphabet(char character) const
+		bool is_in_alphabet(char character) const
 		{
 			return (ALPHABET_TO_VALUE.count(character) > 0);
 		}
-		bool isInRange(int value, bool alternative = false) const
+		bool is_in_range(int value, bool alternative = false) const
 		{
 			if (alternative)
 			{
@@ -73,7 +73,7 @@ namespace kritase64
 			}
 			return (VALUE_TO_ALPHABET.count(value) > 0);
 		}
-		bool isIgnored(char c, bool ignore_all = false) const
+		bool is_ignored(char c, bool ignore_all = false) const
 		{
 			if (ignore_all)
 			{
@@ -81,7 +81,7 @@ namespace kritase64
 				{
 					return false;
 				}
-				return !isInAlphabet(c);
+				return !is_in_alphabet(c);
 			}
 			else
 			{
@@ -89,19 +89,19 @@ namespace kritase64
 			}
 		}
 
-		int alphabetToValue(char character) const
+		int alphabet_to_value(char character) const
 		{
-			if (!isInAlphabet(character))
+			if (!is_in_alphabet(character))
 			{
-				throw kritase64::Base64Exception(kritase64::ERROR_INVALID_BASE64_CHARACTER, "Invalid base64 character");
+				throw kritase64::Base64_Exception(kritase64::ERROR_INVALID_BASE64_CHARACTER, "Invalid base64 character");
 			}
 			return ALPHABET_TO_VALUE.at(character);
 		}
-		char valueToAlphabet(int value, bool alternative = false) const
+		char value_to_alphabet(int value, bool alternative = false) const
 		{
-			if (!isInRange(value, alternative))
+			if (!is_in_range(value, alternative))
 			{
-				throw kritase64::Base64Exception(kritase64::ERROR_VALUE_OUT_OF_RANGE, "Value out of range for base64");
+				throw kritase64::Base64_Exception(kritase64::ERROR_VALUE_OUT_OF_RANGE, "Value out of range for base64");
 			}
 			if (alternative)
 			{
@@ -109,11 +109,11 @@ namespace kritase64
 			}
 			return VALUE_TO_ALPHABET.at(value);
 		}
-		std::string stripIgnored(std::string base64, bool ignoreIllegal = false) const
+		std::string strip_ignored(std::string base64, bool ignore_illegal = false) const
 		{
 			for (auto it = base64.begin(); it != base64.end();)
 			{
-				if (isIgnored(*it, ignoreIllegal))
+				if (is_ignored(*it, ignore_illegal))
 				{
 					it = base64.erase(it);
 					continue;
@@ -123,25 +123,25 @@ namespace kritase64
 			return base64;
 		}
 	};
-	AlphabetConverter& alphabetConverter()
+	Alphabet_Converter& alphabet_converter()
 	{
-		static AlphabetConverter instance;
+		static Alphabet_Converter instance;
 		return instance;
 	}
 }
 
-kritase64::Base64Exception::Base64Exception(kritase64::Base64ErrorTypes type, std::string message) : std::runtime_error(message)
+kritase64::Base64_Exception::Base64_Exception(kritase64::Base64_Error_Types type, std::string message) : std::runtime_error(message)
 {
 	this->type = type;
 }
 
 bool kritase64::check(const std::string& string)
 {
-	bool paddingReached = false;
+	bool padding_reached = false;
 	for (int index = 0; index < string.length(); ++index)
 	{
 		char c = string[index];
-		if (paddingReached)
+		if (padding_reached)
 		{
 			if (c != PAD)
 			{
@@ -152,11 +152,11 @@ bool kritase64::check(const std::string& string)
 		{
 			if (c == PAD)
 			{
-				paddingReached = true;
+				padding_reached = true;
 			}
 			else
 			{
-				if (!alphabetConverter().isInAlphabet(c))
+				if (!alphabet_converter().is_in_alphabet(c))
 				{
 					return false;
 				}
@@ -173,51 +173,51 @@ std::string kritase64::encode(const uint8_t* buffer, size_t size, bool use_alter
 	int triplets = size / 3;
 	for (int index = 0; index < triplets; ++index)
 	{
-		int startIndex = index * 3;
+		int start_index = index * 3;
 
-		int charValue = 0; // hextet 1
-		charValue = (buffer[startIndex] & (128 | 64 | 32 | 16 | 8 | 4)) >> 2;
-		result += alphabetConverter().valueToAlphabet(charValue, use_alternative);
+		int char_value = 0; // hextet 1
+		char_value = (buffer[start_index] & (128 | 64 | 32 | 16 | 8 | 4)) >> 2;
+		result += alphabet_converter().value_to_alphabet(char_value, use_alternative);
 
-		charValue = 0; // hextet 2
-		charValue = ((buffer[startIndex] & (2 | 1)) << 4) | ((buffer[startIndex + 1] & (128 | 64 | 32 | 16)) >> 4);
-		result += alphabetConverter().valueToAlphabet(charValue, use_alternative);
+		char_value = 0; // hextet 2
+		char_value = ((buffer[start_index] & (2 | 1)) << 4) | ((buffer[start_index + 1] & (128 | 64 | 32 | 16)) >> 4);
+		result += alphabet_converter().value_to_alphabet(char_value, use_alternative);
 
-		charValue = 0; // hextet 3
-		charValue = ((buffer[startIndex + 1] & (8 | 4 | 2 | 1)) << 2) | ((buffer[startIndex + 2] & (128 | 64)) >> 6);
-		result += alphabetConverter().valueToAlphabet(charValue, use_alternative);
+		char_value = 0; // hextet 3
+		char_value = ((buffer[start_index + 1] & (8 | 4 | 2 | 1)) << 2) | ((buffer[start_index + 2] & (128 | 64)) >> 6);
+		result += alphabet_converter().value_to_alphabet(char_value, use_alternative);
 
-		charValue = 0; // hextet 4
-		charValue = ((buffer[startIndex + 2] & (32 | 16 | 8 | 4 | 2 | 1)));
-		result += alphabetConverter().valueToAlphabet(charValue, use_alternative);
+		char_value = 0; // hextet 4
+		char_value = ((buffer[start_index + 2] & (32 | 16 | 8 | 4 | 2 | 1)));
+		result += alphabet_converter().value_to_alphabet(char_value, use_alternative);
 	}
 
 	int remainder = size % 3;
 	if (remainder > 0)
 	{
-		int startIndex = size - remainder;
+		int start_index = size - remainder;
 
-		int charValue = 0; // hextet 1
-		charValue = (buffer[startIndex] & (128 | 64 | 32 | 16 | 8 | 4)) >> 2;
-		result += alphabetConverter().valueToAlphabet(charValue, use_alternative);
+		int char_value = 0; // hextet 1
+		char_value = (buffer[start_index] & (128 | 64 | 32 | 16 | 8 | 4)) >> 2;
+		result += alphabet_converter().value_to_alphabet(char_value, use_alternative);
 
 		if (remainder >= 1)
 		{
-			charValue = 0; // hextet 2
-			charValue = (buffer[startIndex] & (2 | 1)) << 4;
-			if (remainder >= 2) charValue |= ((buffer[startIndex + 1] & (128 | 64 | 32 | 16)) >> 4);
-			result += alphabetConverter().valueToAlphabet(charValue, use_alternative);
+			char_value = 0; // hextet 2
+			char_value = (buffer[start_index] & (2 | 1)) << 4;
+			if (remainder >= 2) char_value |= ((buffer[start_index + 1] & (128 | 64 | 32 | 16)) >> 4);
+			result += alphabet_converter().value_to_alphabet(char_value, use_alternative);
 		}
 
 		if (remainder >= 2)
 		{
-			/*charValue = 0; // hextet 2
-			charValue = ((buffer[startIndex] & (2 | 1)) << 4) | ((bytes[startIndex + 1] & (128 | 64 | 32 | 16)) >> 4);
-			result += alphabetConverter().valueToAlphabet(charValue);*/
+			/*char_value = 0; // hextet 2
+			char_value = ((buffer[start_index] & (2 | 1)) << 4) | ((bytes[start_index + 1] & (128 | 64 | 32 | 16)) >> 4);
+			result += alphabet_converter().value_to_alphabet(char_value);*/
 
-			charValue = 0; // hextet 3
-			charValue = (buffer[startIndex + 1] & (8 | 4 | 2 | 1)) << 2;
-			result += alphabetConverter().valueToAlphabet(charValue, use_alternative);
+			char_value = 0; // hextet 3
+			char_value = (buffer[start_index + 1] & (8 | 4 | 2 | 1)) << 2;
+			result += alphabet_converter().value_to_alphabet(char_value, use_alternative);
 		}
 
 		for (int p = 0; p <(3 - remainder); ++p)
@@ -239,10 +239,10 @@ std::string kritase64::encode(const std::string& string, bool use_alternative)
 
 kritase64::Buffer kritase64::decode(std::string string, bool is_ignored)
 {
-	string = alphabetConverter().stripIgnored(string, is_ignored);
+	string = alphabet_converter().strip_ignored(string, is_ignored);
 	if (!check(string))
 	{
-		throw Base64Exception(ERROR_INVALID_BASE64_STRING, "Decoding invalid base64 string");
+		throw Base64_Exception(ERROR_INVALID_BASE64_STRING, "Decoding invalid base64 string");
 	}
 
 	Buffer result;
@@ -252,60 +252,60 @@ kritase64::Buffer kritase64::decode(std::string string, bool is_ignored)
 	{
 		++padding;
 	}
-	int stringSize = string.size() - padding;
-	std::string data = string.substr(0, stringSize);
+	int string_size = string.size() - padding;
+	std::string data = string.substr(0, string_size);
 
-	int quartets = stringSize / 4;
+	int quartets = string_size / 4;
 	for (int index = 0; index < quartets; ++index)
 	{
-		int startIndex = index * 4;
+		int start_index = index * 4;
 
-		uint8_t octetValue = 0; // octet 1
-		octetValue = (alphabetConverter().alphabetToValue(data[startIndex]) << 2) | ((alphabetConverter().alphabetToValue(data[startIndex + 1]) & (32 | 16)) >> 4);
-		result.push_back(octetValue);
+		uint8_t octet_value = 0; // octet 1
+		octet_value = (alphabet_converter().alphabet_to_value(data[start_index]) << 2) | ((alphabet_converter().alphabet_to_value(data[start_index + 1]) & (32 | 16)) >> 4);
+		result.push_back(octet_value);
 
-		octetValue = 0; // octet 2
-		octetValue = ((alphabetConverter().alphabetToValue(data[startIndex + 1]) & (8 | 4 | 2 | 1)) << 4) | ((alphabetConverter().alphabetToValue(data[startIndex + 2]) & (32 | 16 | 8 | 4 )) >> 2);
-		result.push_back(octetValue);
+		octet_value = 0; // octet 2
+		octet_value = ((alphabet_converter().alphabet_to_value(data[start_index + 1]) & (8 | 4 | 2 | 1)) << 4) | ((alphabet_converter().alphabet_to_value(data[start_index + 2]) & (32 | 16 | 8 | 4 )) >> 2);
+		result.push_back(octet_value);
 
-		octetValue = 0; // octet 3
-		octetValue = ((alphabetConverter().alphabetToValue(data[startIndex + 2]) & (2 | 1)) << 6) | alphabetConverter().alphabetToValue(data[startIndex + 3]);
-		result.push_back(octetValue);
+		octet_value = 0; // octet 3
+		octet_value = ((alphabet_converter().alphabet_to_value(data[start_index + 2]) & (2 | 1)) << 6) | alphabet_converter().alphabet_to_value(data[start_index + 3]);
+		result.push_back(octet_value);
 	}
 
 	if (padding > 0)
 	{
-		int startIndex = quartets * 4;
+		int start_index = quartets * 4;
 
-		uint8_t octetValue = 0;
+		uint8_t octet_value = 0;
 		if (padding == 2)
 		{
-			octetValue = 0; // octet 1
-			octetValue = (alphabetConverter().alphabetToValue(data[startIndex]) << 2) |((alphabetConverter().alphabetToValue(data[startIndex + 1]) & (32 | 16)) >> 4);
-			result.push_back(octetValue);
+			octet_value = 0; // octet 1
+			octet_value = (alphabet_converter().alphabet_to_value(data[start_index]) << 2) |((alphabet_converter().alphabet_to_value(data[start_index + 1]) & (32 | 16)) >> 4);
+			result.push_back(octet_value);
 		}
 
 		if (padding == 1)
 		{
-			octetValue = 0; // octet 1
-			octetValue = (alphabetConverter().alphabetToValue(data[startIndex]) << 2) |((alphabetConverter().alphabetToValue(data[startIndex + 1]) & (32 | 16)) >> 4);
-			result.push_back(octetValue);
+			octet_value = 0; // octet 1
+			octet_value = (alphabet_converter().alphabet_to_value(data[start_index]) << 2) |((alphabet_converter().alphabet_to_value(data[start_index + 1]) & (32 | 16)) >> 4);
+			result.push_back(octet_value);
 
-			octetValue = 0; // octet 2
-			octetValue = ((alphabetConverter().alphabetToValue(data[startIndex + 1]) & (8 | 4 | 2 | 1)) << 4) | ((alphabetConverter().alphabetToValue(data[startIndex + 2]) & (32 | 16 | 8 | 4 )) >> 2);
-			result.push_back(octetValue);
+			octet_value = 0; // octet 2
+			octet_value = ((alphabet_converter().alphabet_to_value(data[start_index + 1]) & (8 | 4 | 2 | 1)) << 4) | ((alphabet_converter().alphabet_to_value(data[start_index + 2]) & (32 | 16 | 8 | 4 )) >> 2);
+			result.push_back(octet_value);
 		}
 	}
 
 	return result;
 }
-std::string kritase64::decodeToString(const std::string& string, bool is_ignored)
+std::string kritase64::decode_to_string(const std::string& string, bool is_ignored)
 {
 	Buffer buffer = decode(string, is_ignored);
-	std::string res;
-	res.resize(buffer.size());
-	memcpy(res.data(), buffer.data(), buffer.size());
-	return res;
+	std::string result;
+	result.resize(buffer.size());
+	memcpy(result.data(), buffer.data(), buffer.size());
+	return result;
 }
 
 std::string kritase64::Stream::str() const
@@ -313,7 +313,7 @@ std::string kritase64::Stream::str() const
 	return std::stringstream::str();
 }
 
-kritase64::Stream::Stream(const std::string& base64, std::ios_base::openmode openmode, Base64Mode mode) : std::stringstream(openmode)
+kritase64::Stream::Stream(const std::string& base64, std::ios_base::openmode openmode, Base64_Mode mode) : std::stringstream(openmode)
 {
 	this->mode = mode;
 	this->base64(base64);
@@ -321,10 +321,10 @@ kritase64::Stream::Stream(const std::string& base64, std::ios_base::openmode ope
 
 kritase64::Buffer kritase64::Stream::buffer() const
 {
-	kritase64::Buffer res;
-	res.resize(str().size());
-	memcpy(res.data(), str().data(), str().size());
-	return res;
+	kritase64::Buffer result;
+	result.resize(str().size());
+	memcpy(result.data(), str().data(), str().size());
+	return result;
 }
 void kritase64::Stream::buffer(const Buffer& buffer)
 {
@@ -345,7 +345,7 @@ std::string kritase64::Istream::str() const
 	return std::istringstream::str();
 }
 
-kritase64::Istream::Istream(const std::string& base64, std::ios_base::openmode openmode, Base64Mode mode) : std::istringstream(openmode)
+kritase64::Istream::Istream(const std::string& base64, std::ios_base::openmode openmode, Base64_Mode mode) : std::istringstream(openmode)
 {
 	this->mode = mode;
 	this->base64(base64);
@@ -353,10 +353,10 @@ kritase64::Istream::Istream(const std::string& base64, std::ios_base::openmode o
 
 kritase64::Buffer kritase64::Istream::buffer() const
 {
-	kritase64::Buffer res;
-	res.resize(str().size());
-	memcpy(res.data(), str().data(), str().size());
-	return res;
+	kritase64::Buffer result;
+	result.resize(str().size());
+	memcpy(result.data(), str().data(), str().size());
+	return result;
 }
 void kritase64::Istream::buffer(const Buffer& buffer)
 {
@@ -377,7 +377,7 @@ std::string kritase64::Ostream::str() const
 	return std::ostringstream::str();
 }
 
-kritase64::Ostream::Ostream(const std::string& base64, std::ios_base::openmode openmode, Base64Mode mode) : std::ostringstream(openmode)
+kritase64::Ostream::Ostream(const std::string& base64, std::ios_base::openmode openmode, Base64_Mode mode) : std::ostringstream(openmode)
 {
 	this->mode = mode;
 	this->base64(base64);
@@ -385,10 +385,10 @@ kritase64::Ostream::Ostream(const std::string& base64, std::ios_base::openmode o
 
 kritase64::Buffer kritase64::Ostream::buffer() const
 {
-	kritase64::Buffer res;
-	res.resize(str().size());
-	memcpy(res.data(), str().data(), str().size());
-	return res;
+	kritase64::Buffer result;
+	result.resize(str().size());
+	memcpy(result.data(), str().data(), str().size());
+	return result;
 }
 void kritase64::Ostream::buffer(const Buffer& buffer)
 {
