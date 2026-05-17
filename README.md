@@ -27,4 +27,4 @@ To use the command-line tool, just run `kritase64`.
 
 # License
 
-This project is licensed under the MIT License. See `LICENSE.txt` For details. You can download the source code [here](https://gitlab.com/kritomas/kritase64).
+This project is licensed under the MIT License. See `LICENSE.txt` For details.
